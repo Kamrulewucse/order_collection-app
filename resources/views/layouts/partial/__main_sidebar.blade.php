@@ -3,9 +3,7 @@
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}"
        class="brand-link {{ auth()->user()->theme_mode == 1 ? 'bg-white' : ' bg-dark' }} ">
-        <img src="{{ asset('img/logo.png') }}" alt="Logo"
-             class="brand-image img-circle elevation-3"
-             style="opacity: .8">
+        <img src="{{ asset('img/logo.png') }}" alt="Logo" class="brand-image img-circle elevation-3" style="width:100px;height:50px;border-radius: 10%;">
         <span class="brand-text"><b>Admin</b>Panel</span>
     </a>
 
@@ -171,7 +169,7 @@
                 <?php
                 $subMenu = [
                     'sr.index', 'sr.create', 'sr.edit','unit.index', 'unit.create', 'unit.edit',
-                    'doctor.index', 'doctor.create', 'doctor.edit','product.index', 'product.create', 'product.edit',
+                    'doctor.index', 'doctor.create', 'doctor.edit','product.index', 'product.create', 'product.edit','farm.index', 'farm.create', 'farm.edit',
                     'client.index', 'client.create', 'client.edit','category.index', 'category.create', 'category.edit',
                 ];
                 ?>
@@ -211,6 +209,16 @@
                                     </a>
                                 </li>
                             @endif
+                            <?php
+                                $subSubMenu = ['farm.index', 'farm.create', 'farm.edit'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('farm.index') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Farm</p>
+                                </a>
+                            </li>
                             <?php
                                 $subSubMenu = ['client.index', 'client.create', 'client.edit'];
                             ?>

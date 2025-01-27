@@ -23,7 +23,7 @@ class SRController extends Controller
      */
     public function index()
     {
-        return view('distribution_settings.sr.index');
+        return view('settings.sr.index');
     }
     public function dataTable()
     {
@@ -53,7 +53,7 @@ class SRController extends Controller
         if (!auth()->user()->hasPermissionTo('dsr_create')) {
             abort(403, 'Unauthorized');
         }
-        return view('distribution_settings.sr.create');
+        return view('settings.sr.create');
     }
 
     /**
@@ -137,7 +137,7 @@ class SRController extends Controller
         }
         try {
             // If the Client exists, display the edit view
-            return view('distribution_settings.sr.edit', compact('sr'));
+            return view('settings.sr.edit', compact('sr'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Client is not found
             return redirect()->route('sr.index')->with('error', 'SR not found: '.$e->getMessage());

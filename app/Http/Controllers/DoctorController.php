@@ -23,7 +23,7 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        return view('distribution_settings.doctor.index');
+        return view('settings.doctor.index');
     }
     public function dataTable()
     {
@@ -53,7 +53,7 @@ class DoctorController extends Controller
         if (!auth()->user()->hasPermissionTo('dsr_create')) {
             abort(403, 'Unauthorized');
         }
-        return view('distribution_settings.doctor.create');
+        return view('settings.doctor.create');
     }
 
     /**
@@ -137,7 +137,7 @@ class DoctorController extends Controller
         }
         try {
             // If the Client exists, display the edit view
-            return view('distribution_settings.doctor.edit', compact('doctor'));
+            return view('settings.doctor.edit', compact('doctor'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Client is not found
             return redirect()->route('doctor.index')->with('error', 'Doctor not found: '.$e->getMessage());

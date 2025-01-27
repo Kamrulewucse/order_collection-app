@@ -21,6 +21,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReceiptPaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FarmController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
@@ -99,6 +100,10 @@ Route::middleware('checkDatabaseConnection')->group(function (){
             //Doctor
             Route::resource('doctor', DoctorController::class)->middleware('permission:dsr');
             Route::get('doctor-datatable', [DoctorController::class, 'dataTable'])->name('doctor.datatable');
+
+            //Farm
+            Route::resource('farm', FarmController::class);
+            Route::get('farm-datatable', [FarmController::class, 'dataTable'])->name('farm.datatable');
 
             //Customer
             Route::resource('client', ClientController::class);

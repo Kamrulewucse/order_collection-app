@@ -1,12 +1,13 @@
-<?php $__env->startSection('title','Doctor'); ?>
-<?php $__env->startSection('content'); ?>
+@extends('layouts.app')
+@section('title','Farms')
+@section('content')
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <?php if(auth()->user()->can('dsr_create')): ?>
-                    <a href="<?php echo e(route('doctor.create')); ?>" class="btn btn-primary bg-gradient-primary btn-sm">Create Doctor <i class="fa fa-plus"></i></a>
-                    <?php endif; ?>
+                    @if(auth()->user()->can('customer_create'))
+                    <a href="{{ route('farm.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Create Farm <i class="fa fa-plus"></i></a>
+                    @endif
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -16,8 +17,11 @@
                             <tr>
                                 <th>S/L</th>
                                 <th>Name</th>
+                                <th>Farm Name</th>
                                 <th>Mobile No.</th>
-                                <th>Email</th>
+                                <th>Doctor Name</th>
+                                <th>District</th>
+                                <th>Thana</th>
                                 <th>Address</th>
                                 <th>Opening Balance</th>
                                 <th>Status</th>
@@ -31,23 +35,26 @@
             </div>
         </div>
     </div>
-<?php $__env->stopSection(); ?>
-<?php $__env->startSection('script'); ?>
+@endsection
+@section('script')
     <script>
         $(function () {
 
             $('#table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '<?php echo e(route('doctor.datatable')); ?>',
+                ajax: '{{ route('farm.datatable') }}',
                 "pagingType": "full_numbers",
                 "lengthMenu": [[10, 25, 50, -1],[10, 25, 50, "All"]
                 ],
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
+                    {data: 'shop_name', name: 'shop_name'},
                     {data: 'mobile_no', name: 'mobile_no'},
-                    {data: 'email', name: 'email'},
+                    {data: 'doctor_name', name: 'doctor.name'},
+                    {data: 'district_name', name: 'district.name_eng'},
+                    {data: 'thana_name', name: 'thana.name_eng'},
                     {data: 'address', name: 'address'},
                     {
                         data: 'opening_balance',
@@ -91,7 +98,7 @@
                         preloaderToggle(true);
                         $.ajax({
                             method: "DELETE",
-                            url: "<?php echo e(route('doctor.destroy', ['doctor' => 'REPLACE_WITH_ID_HERE'])); ?>".replace('REPLACE_WITH_ID_HERE', id),
+                            url: "{{ route('farm.destroy', ['farm' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE', id),
                             data: { id: id }
                         }).done(function( response ) {
                             preloaderToggle(false);
@@ -118,6 +125,4 @@
             });
         });
     </script>
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\wamp64\www\order-collection\resources\views/distribution_settings/doctor/index.blade.php ENDPATH**/ ?>
+@endsection

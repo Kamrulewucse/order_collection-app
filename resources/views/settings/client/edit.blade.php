@@ -46,7 +46,7 @@
                             <label for="sr" class="col-sm-2 col-form-label">SR <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
                                 <select name="sr" id="sr" class="form-control select2">
-                                    <option value="">Select Company</option>
+                                    <option value="">Select SR</option>
                                     @foreach($srs as $sr)
                                         <option {{ old('sr',$client->sr_id) == $sr->id ? 'selected' : '' }} value="{{ $sr->id }}">{{ $sr->name }}</option>
                                     @endforeach
