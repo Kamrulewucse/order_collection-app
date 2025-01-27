@@ -6,6 +6,7 @@ use App\Models\AccountHead;
 use App\Models\DistributionOrder;
 use App\Models\PurchaseOrder;
 use App\Models\Client;
+use App\Models\District;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class ClientController extends Controller
     }
     public function dataTable()
     {
-        $query = Client::where('type',3)->with('company');//Client
+        $query = Client::where('type',4)->with('sr','district','thana');//Client
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Client $client) {
@@ -38,8 +39,14 @@ class ClientController extends Controller
                 }
                 return $btn;
             })
-            ->addColumn('company_name', function(Client $client) {
-                return $client->company->name ?? '';
+            ->addColumn('sr_name', function(Client $client) {
+                return $client->sr->name ?? '';
+            })
+            ->addColumn('district_name', function(Client $client) {
+                return $client->district->name_eng ?? '';
+            })
+            ->addColumn('thana_name', function(Client $client) {
+                return $client->thana->name_eng ?? '';
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -54,8 +61,9 @@ class ClientController extends Controller
         if (!auth()->user()->hasPermissionTo('customer_create')) {
             abort(403, 'Unauthorized');
         }
-        $companies = Client::where('type',1)->get();
-        return view('distribution_settings.client.create',compact('companies'));
+        $srs = Client::where('type',2)->get();
+        $districts = District::where('status',1)->get();
+        return view('distribution_settings.client.create',compact('srs','districts'));
     }
 
     /**
@@ -72,7 +80,7 @@ class ClientController extends Controller
             'name' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                ->where('type',3)
+                ->where('type',4)
             ],
             'shop_name' =>[
                 'required','max:255',
@@ -80,10 +88,14 @@ class ClientController extends Controller
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',3)
+                    ->where('type',4)
             ],
-            'company' =>['required'],
-            'address' => 'nullable|string|max:255', // Make 'address' nullable
+            'sr' =>['required'],
+            'district' =>['required'],
+            'thana' =>['required'],
+            'latitude' => 'required|string|max:255',
+            'longitude' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
             'opening_balance' => 'required|numeric|min:0',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
@@ -92,10 +104,16 @@ class ClientController extends Controller
         DB::beginTransaction();
 
         try {
+            $location_address = getLocationName($request->latitude, $request->longitude);
             // Create a new Client record in the database
-            $validatedData['type'] = 3;
-            $validatedData['company_id'] = $validatedData['company'];
-            unset($validatedData['company']);
+            $validatedData['type'] = 4;
+            $validatedData['sr_id'] = $validatedData['sr'];
+            $validatedData['district_id'] = $validatedData['district'];
+            $validatedData['thana_id'] = $validatedData['thana'];
+            $validatedData['location_address'] = $location_address;
+            unset($validatedData['sr']);
+            unset($validatedData['district']);
+            unset($validatedData['thana']);
             $client = Client::create($validatedData);
             // Create/Update User
             $user = User::where('role','Client')->where('client_id',$client->id)->first();
@@ -119,7 +137,6 @@ class ClientController extends Controller
         } catch (\Exception $e) {
             // Roll back the transaction in case of an error
             DB::rollback();
-
             // Handle the error and redirect with an error message
             return redirect()->route('client.create')
                 ->withInput()
@@ -135,13 +152,14 @@ class ClientController extends Controller
         if (!auth()->user()->hasPermissionTo('customer_edit')) {
             abort(403, 'Unauthorized');
         }
-        if ($client->type != 3) {
+        if ($client->type != 4) {
             abort(404);
         }
         try {
             // If the Client exists, display the edit view
-            $companies = Client::where('type',1)->get();
-            return view('distribution_settings.client.edit', compact('client','companies'));
+            $srs = Client::where('type',2)->get();
+            $districts = District::where('status',1)->get();
+            return view('distribution_settings.client.edit', compact('client','srs','districts'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Client is not found
             return redirect()->route('client.index')->with('error', 'Client not found: '.$e->getMessage());
@@ -156,7 +174,7 @@ class ClientController extends Controller
         if (!auth()->user()->hasPermissionTo('customer_edit')) {
             abort(403, 'Unauthorized');
         }
-        if ($client->type != 3) {
+        if ($client->type != 4) {
             abort(404);
         }
         // Validate the request data
@@ -164,7 +182,7 @@ class ClientController extends Controller
             'name' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',3)
+                    ->where('type',4)
                     ->ignore($client)
             ],
             'shop_name' =>[
@@ -173,10 +191,14 @@ class ClientController extends Controller
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',3)
+                    ->where('type',4)
                     ->ignore($client)
             ],
-            'company' =>['required'],
+            'sr' =>['required'],
+            'district' =>['required'],
+            'thana' =>['required'],
+            'longitude' => 'nullable|string|max:255',
+            'latitude' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255', // Make 'address' nullable
             'opening_balance' => 'required|numeric|min:0',
             'status' => 'required|boolean', // Ensure 'status' is boolean
@@ -186,10 +208,17 @@ class ClientController extends Controller
         DB::beginTransaction();
 
         try {
+            //Get addresss from latitude and longitude
+            $location_address = getLocationName($request->latitude, $request->longitude);
             // Update the Client record in the database
             $validatedData['type'] = 3;
-            $validatedData['company_id'] = $validatedData['company'];
-            unset($validatedData['company']);
+            $validatedData['sr_id'] = $validatedData['sr'];
+            $validatedData['district_id'] = $validatedData['district'];
+            $validatedData['thana_id'] = $validatedData['thana'];
+            $validatedData['location_address'] = $location_address;
+            unset($validatedData['sr']);
+            unset($validatedData['district']);
+            unset($validatedData['thana']);
             $client->update($validatedData);
 
             $user = User::where('role','Client')->where('client_id',$client->id)->first();

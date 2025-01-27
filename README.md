@@ -1,11 +1,7 @@
-# Distributor Sales Representative Software Features
-
-## 1. Customer Relationship Management (CRM)
+# SR Sales Representative Software Features
 
 ### 1.1. Contact Management
 - **Centralized Database**: Store all customer information in one place.
-- **Interaction Tracking**: Log calls, emails, and meetings.
-- **Customer Segmentation**: Group customers based on various criteria for targeted sales.
 
 ### 1.2. Sales Pipeline Management
 - **Pipeline Stages**: Visualize and manage different stages of the sales process.
@@ -15,7 +11,6 @@
 ## 2. Order Management
 
 ### 2.1. Order Processing
-- **Quotation Generation**: Create and send professional quotes to customers.
 - **Order Entry**: Enter and manage customer orders efficiently.
 - **Status Updates**: Provide real-time updates on order status to customers.
 
@@ -86,4 +81,4 @@
 
 ---
 
-*This document provides an overview of the key features of software designed for Distributor Sales Representatives. For more detailed information or specific inquiries, please contact our support team or visit our website.*
+*This document provides an overview of the key features of software designed for SR Sales Representatives. For more detailed information or specific inquiries, please contact kamrulewucse@gmail.com*

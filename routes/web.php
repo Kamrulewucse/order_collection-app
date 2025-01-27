@@ -194,6 +194,7 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::get('get_sales_order_details', [CommonController::class, 'getSalesOrderDetails'])->name('get_sales_order_details');
         Route::get('get_distribution_product_info', [CommonController::class, 'getDistributionProductInfo'])->name('get_distribution_product_info');
         Route::get('get_collection_amount', [CommonController::class, 'getCollectionAmount'])->name('get_collection_amount');
+        Route::get('/get-thanas/{districtId}', [CommonController::class, 'getThanasByDistrict'])->name('get.thanas');
 
     });
 

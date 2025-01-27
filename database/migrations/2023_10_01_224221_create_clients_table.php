@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->tinyInteger('type')->comment('1=Supplier,2=Dsr,3=Customer');
             $table->string('name');
+            $table->unsignedBigInteger('sr_id');
             $table->string('shop_name')->nullable();
             $table->string('email')->nullable();
             $table->string('mobile_no')->nullable();

@@ -15,16 +15,12 @@ class Product extends Model
     {
         return $this->hasMany(Inventory::class);
     }
-    public function supplier()
-    {
-        return $this->belongsTo(Client::class);
-    }
     public function unit()
     {
         return $this->belongsTo(Unit::class);
     }
-    public function brand()
+    public function category()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsTo(Category::class);
     }
 }

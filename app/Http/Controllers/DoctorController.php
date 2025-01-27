@@ -27,7 +27,7 @@ class DoctorController extends Controller
     }
     public function dataTable()
     {
-        $query = Client::where('type',4);//Doctor
+        $query = Client::where('type',3);//Doctor
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Client $client) {
@@ -70,17 +70,17 @@ class DoctorController extends Controller
             'name' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                ->where('type',4)
+                ->where('type',3)
             ],
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',4)
+                    ->where('type',3)
             ],
             'email' =>[
                 'nullable','max:255',
                 Rule::unique('clients')
-                    ->where('type',4)
+                    ->where('type',3)
             ],
             'address' => 'nullable|string|max:255', // Make 'address' nullable
             'opening_balance' => 'required|numeric|min:0',
@@ -92,7 +92,7 @@ class DoctorController extends Controller
 
         try {
             // Create a new Client record in the database
-            $validatedData['type'] = 4;
+            $validatedData['type'] = 3;
             $doctor = Client::create($validatedData);
             // Create/Update User
             $user = User::where('role','Doctor')->where('client_id',$doctor->id)->first();
@@ -132,7 +132,7 @@ class DoctorController extends Controller
         if (!auth()->user()->hasPermissionTo('dsr_edit')) {
             abort(403, 'Unauthorized');
         }
-        if ($doctor->type != 4) {
+        if ($doctor->type != 3) {
             abort(404);
         }
         try {
@@ -152,7 +152,7 @@ class DoctorController extends Controller
         if (!auth()->user()->hasPermissionTo('dsr_edit')) {
             abort(403, 'Unauthorized');
         }
-        if ($doctor->type != 4) {
+        if ($doctor->type != 3) {
             abort(404);
         }
         // Validate the request data
@@ -160,19 +160,19 @@ class DoctorController extends Controller
             'name' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',4)
+                    ->where('type',3)
                     ->ignore($doctor)
             ],
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',4)
+                    ->where('type',3)
                     ->ignore($doctor)
             ],
             'email' =>[
                 'nullable','max:255',
                 Rule::unique('clients')
-                    ->where('type',4)
+                    ->where('type',3)
                     ->ignore($doctor)
             ],
             'address' => 'nullable|string|max:255', // Make 'address' nullable
@@ -185,7 +185,7 @@ class DoctorController extends Controller
 
         try {
             // Update the Client record in the database
-            $validatedData['type'] = 4;
+            $validatedData['type'] = 3;
             $doctor->update($validatedData);
 
             // Create/Update User

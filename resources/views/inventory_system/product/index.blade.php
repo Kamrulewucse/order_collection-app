@@ -18,10 +18,7 @@
                                 <th>S/L</th>
                                 <th>Name</th>
                                 <th>Code</th>
-                                <th>Purchase Price</th>
-                                <th>Selling Price</th>
-                                <th>Company</th>
-                                <th>Brand</th>
+                                <th>Category</th>
                                 <th>Unit</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -50,10 +47,7 @@
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
                     {data: 'code', name: 'code'},
-                    {data: 'purchase_price', name: 'purchase_price',className:'text-right'},
-                    {data: 'selling_price', name: 'selling_price',className:'text-right'},
-                    {data: 'supplier_name', name: 'supplier.name'},
-                    {data: 'brand_name', name: 'brand.name'},
+                    {data: 'category_name', name: 'category.name'},
                     {data: 'unit_name', name: 'unit.name'},
                     {
                         data: 'status',

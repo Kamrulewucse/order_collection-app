@@ -19,7 +19,9 @@
                                 <th>Name</th>
                                 <th>Shop Name</th>
                                 <th>Mobile No.</th>
-                                <th>Company</th>
+                                <th>SR</th>
+                                <th>District</th>
+                                <th>Thana</th>
                                 <th>Address</th>
                                 <th>Opening Balance</th>
                                 <th>Status</th>
@@ -50,7 +52,9 @@
                     {data: 'name', name: 'name'},
                     {data: 'shop_name', name: 'shop_name'},
                     {data: 'mobile_no', name: 'mobile_no'},
-                    {data: 'company_name', name: 'company.name'},
+                    {data: 'sr_name', name: 'sr.name'},
+                    {data: 'district_name', name: 'district.name_eng'},
+                    {data: 'thana_name', name: 'thana.name_eng'},
                     {data: 'address', name: 'address'},
                     {
                         data: 'opening_balance',

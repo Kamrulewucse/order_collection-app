@@ -33,9 +33,17 @@ class Client extends Model
     {
      return $this->belongsTo(AccountHead::class,'supplier_id','id');
     }
-    public function company()
+    public function sr()
     {
-     return $this->belongsTo(Client::class,'company_id','id');
+     return $this->belongsTo(Client::class,'sr_id','id');
+    }
+    public function district()
+    {
+     return $this->belongsTo(District::class,'district_id','id');
+    }
+    public function thana()
+    {
+     return $this->belongsTo(Thana::class,'thana_id','id');
     }
     public function inventoryLogs()
     {

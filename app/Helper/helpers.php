@@ -5,6 +5,8 @@ use App\Models\AccountHead;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 function numberToMonthName($monthNumber){
     if ($monthNumber != '')
@@ -136,4 +138,51 @@ function dropdownMenuContainer($elements){
     $html .= $elements;
     $html .='</div></div>';
     return $html;
+}
+
+function getLocationName($latitude, $longitude)
+{
+    $cacheKey = "location_{$latitude}_{$longitude}";
+
+    // Check cache first
+    return Cache::remember($cacheKey, 3600, function () use ($latitude, $longitude) {
+        $url = "https://nominatim.openstreetmap.org/reverse";
+        $queryParams = [
+            'format' => 'json',
+            'lat' => $latitude,
+            'lon' => $longitude,
+            'addressdetails' => 1,
+        ];
+
+        try {
+            // Make the API request with rate limiting
+            usleep(1000000); // 1-second delay for rate limiting
+
+            $response = Http::withHeaders([
+                'User-Agent' => 'Restaurant ERP/1.0 (restaurant@gmail.com)'
+            ])->get($url, $queryParams);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $locationName = $data['display_name'] ?? 'Location not found';
+
+                if (!$locationName && isset($data['address'])) {
+                    $address = $data['address'];
+                    $locationName = $address['city'] ??
+                                    $address['town'] ??
+                                    $address['village'] ??
+                                    $address['county'] ??
+                                    $address['state'] ??
+                                    $address['country'] ??
+                                    'Location not found';
+                }
+
+                return $locationName;
+            }
+
+            return 'Failed to fetch location';
+        } catch (\Exception $e) {
+            return 'Error: ' . $e->getMessage();
+        }
+    });
 }

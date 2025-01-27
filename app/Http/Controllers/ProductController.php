@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\CommonExcelImport;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\Network;
 use App\Models\Product;
@@ -28,7 +29,7 @@ class ProductController extends Controller
     }
     public function dataTable()
     {
-        $query = Product::with('unit','brand','supplier');
+        $query = Product::with('unit','category');
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Product $product) {
@@ -42,20 +43,11 @@ class ProductController extends Controller
                 return $btn;
 
             })
-            ->editColumn('purchase_price', function(Product $product) {
-               return number_format($product->purchase_price,2);
-            })
-            ->editColumn('selling_price', function(Product $product) {
-               return number_format($product->selling_price,2);
-            })
             ->addColumn('unit_name', function(Product $product) {
                return $product->unit->name ?? '';
             })
-            ->addColumn('brand_name', function(Product $product) {
-               return $product->brand->name ?? '';
-            })
-            ->addColumn('supplier_name', function(Product $product) {
-               return $product->supplier->name ?? '';
+            ->addColumn('category_name', function(Product $product) {
+               return $product->category->name ?? '';
             })
 
             ->rawColumns(['action'])
@@ -72,10 +64,9 @@ class ProductController extends Controller
             abort(403, 'Unauthorized');
         }
         $units = Unit::where('status',1)->get();
-        $brands = Brand::where('status',1)->get();
-        $companies = Client::where('type',1)->get();
+        $categories = Category::where('status',1)->get();
         return view('inventory_system.product.create',compact('units',
-            'brands','companies'));
+            'categories'));
     }
 
     /**
@@ -92,11 +83,8 @@ class ProductController extends Controller
                 'required','max:255',
                 Rule::unique('products')
             ],
-            'purchase_price' => 'required|numeric|min:0',
-            'selling_price' => 'required|numeric|min:0',
-            'company' => 'required',
             'unit' => 'required',
-            'brand' => 'required',
+            'category' => 'required',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -106,11 +94,9 @@ class ProductController extends Controller
         try {
             $validatedData['code'] = Product::max('code') ? Product::max('code') + 1 : 1001;
             $validatedData['unit_id'] = $request->unit;
-            $validatedData['brand_id'] = $request->brand;
-            $validatedData['supplier_id'] = $request->company;
-            unset($validatedData['company']); // Remove the 'channel' key
+            $validatedData['category_id'] = $request->category;
             unset($validatedData['unit']); // Remove the 'channel' key
-            unset($validatedData['brand']); // Remove the 'channel' key
+            unset($validatedData['category']); // Remove the 'channel' key
 
             // Create a new Product record in the database
             $product = Product::create($validatedData);
@@ -139,11 +125,10 @@ class ProductController extends Controller
         }
         try {
             $units = Unit::where('status',1)->get();
-            $brands = Brand::where('status',1)->get();
-            $companies = Client::where('type',1)->get();
+            $categories = Category::where('status',1)->get();
             // If the Product exists, display the edit view
             return view('inventory_system.product.edit', compact('product',
-                'units','brands','companies'));
+                'units','categories'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Product is not found
             return redirect()->route('product.index')->with('error', 'Product not found: '.$e->getMessage());
@@ -165,11 +150,8 @@ class ProductController extends Controller
                 Rule::unique('products')
                     ->ignore($product)
             ],
-            'purchase_price' => 'required|numeric|min:0',
-            'selling_price' => 'required|numeric|min:0',
-            'company' => 'required',
             'unit' => 'required',
-            'brand' => 'required',
+            'category' => 'required',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -178,11 +160,9 @@ class ProductController extends Controller
 
         try {
             $validatedData['unit_id'] = $validatedData['unit'];
-            $validatedData['brand_id'] = $validatedData['brand'];
-            $validatedData['supplier_id'] = $validatedData['company'];
-            unset($validatedData['company']);
+            $validatedData['category_id'] = $validatedData['category'];
             unset($validatedData['unit']);
-            unset($validatedData['brand']);
+            unset($validatedData['category']);
             // Update the Product record in the database
             $product->update($validatedData);
 

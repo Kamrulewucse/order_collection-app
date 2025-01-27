@@ -15,30 +15,16 @@
                     @csrf
                     @method('PUT')
                     <div class="card-body">
-                        <div class="form-group row {{ $errors->has('company') ? 'has-error' :'' }}">
-                            <label for="company" class="col-sm-2 col-form-label">Company <span class="text-danger">*</span></label>
+                        <div class="form-group row {{ $errors->has('category') ? 'has-error' :'' }}">
+                            <label for="category" class="col-sm-2 col-form-label">Category <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <select name="company" id="company" class="form-control select2">
-                                    <option value="">Select Company</option>
-                                    @foreach($companies as $company)
-                                        <option {{ old('company',$product->supplier_id) == $company->id ? 'selected' : '' }} value="{{ $company->id }}">{{ $company->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('company')
-                                <span class="help-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="form-group row {{ $errors->has('brand') ? 'has-error' :'' }}">
-                            <label for="brand" class="col-sm-2 col-form-label">Brand <span class="text-danger">*</span></label>
-                            <div class="col-sm-10">
-                                <select name="brand" id="brand" class="form-control select2">
+                                <select name="category" id="category" class="form-control select2">
                                     <option value="">Select Brand</option>
-                                    @foreach($brands as $brand)
-                                        <option {{ old('brand',$product->brand_id) == $brand->id ? 'selected' : '' }} value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                    @foreach($categories as $category)
+                                        <option {{ old('category',$product->category_id) == $category->id ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
                                 </select>
-                                @error('brand')
+                                @error('category')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>

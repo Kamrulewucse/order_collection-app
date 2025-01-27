@@ -15,6 +15,7 @@ use App\Models\InventoryLog;
 use App\Models\Product;
 use App\Models\Room;
 use App\Models\SaleOrder;
+use App\Models\Thana;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -317,4 +318,12 @@ class CommonController extends Controller
             'selectedRoomsId','startDate','endDate'))->render();
         return response()->json($html);
     }
+
+    public function getThanasByDistrict($districtId)
+    {
+        // get thanas
+        $thanas = Thana::where('status',1)->where('district_id', $districtId)->get();
+        return response()->json($thanas);
+    }
+
 }
