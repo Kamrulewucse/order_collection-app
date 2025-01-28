@@ -9,7 +9,7 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DistributionOrderController;
+use App\Http\Controllers\SROrderController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\SRController;
 use App\Http\Controllers\FloorController;
@@ -112,30 +112,30 @@ Route::middleware('checkDatabaseConnection')->group(function (){
 
         Route::middleware('permission:distribution')->group(function () {
             //Distribution Order
-            Route::resource('distribution', DistributionOrderController::class);
-            Route::get('distribution-datatable', [DistributionOrderController::class, 'dataTable'])->name('distribution.datatable');
+            Route::resource('sr-sales', SROrderController::class);
+            Route::get('sr-sales-datatable', [SROrderController::class, 'dataTable'])->name('sr-sales.datatable');
 
-            Route::get('customer-payments', [DistributionOrderController::class, 'customerPayments'])->name('customer-payments');
-            Route::get('customer-payment-distribution-datatable', [DistributionOrderController::class, 'customerPaymentsDataTable'])->name('customer-payments.datatable');
+            Route::get('customer-payments', [SROrderController::class, 'customerPayments'])->name('customer-payments');
+            Route::get('customer-payment-distribution-datatable', [SROrderController::class, 'customerPaymentsDataTable'])->name('customer-payments.datatable');
 
-            Route::get('distribution-receipt-details/{distributionOrder}', [DistributionOrderController::class, 'details'])->name('distribution.details');
-            Route::get('distribution-final-details/{distributionOrder}', [DistributionOrderController::class, 'finalDetails'])->name('distribution.final_details');
+            Route::get('distribution-receipt-details/{distributionOrder}', [SROrderController::class, 'details'])->name('distribution.details');
+            Route::get('distribution-final-details/{distributionOrder}', [SROrderController::class, 'finalDetails'])->name('distribution.final_details');
 
-            Route::get('distribution-invoice/{distributionOrder}', [DistributionOrderController::class, 'distributionInvoice'])->name('distribution.day_close');
-            Route::post('distribution-invoice/{distributionOrder}', [DistributionOrderController::class, 'dayClosePost']);
+            Route::get('distribution-invoice/{distributionOrder}', [SROrderController::class, 'distributionInvoice'])->name('distribution.day_close');
+            Route::post('distribution-invoice/{distributionOrder}', [SROrderController::class, 'dayClosePost']);
 
-            Route::post('distribution-hold-release-post/{distributionOrder}', [DistributionOrderController::class, 'holdReleasePost'])->name('distribution.hold_release_post');
+            Route::post('distribution-hold-release-post/{distributionOrder}', [SROrderController::class, 'holdReleasePost'])->name('distribution.hold_release_post');
 
-            Route::get('distribution-customer-sale-entry/{distributionOrder}', [DistributionOrderController::class, 'customerSaleEntry'])->name('distribution.customer_sale_entry');
-            Route::post('distribution-customer-sale-entry/{distributionOrder}', [DistributionOrderController::class, 'customerSaleEntryPost']);
+            Route::get('distribution-customer-sale-entry/{distributionOrder}', [SROrderController::class, 'customerSaleEntry'])->name('distribution.customer_sale_entry');
+            Route::post('distribution-customer-sale-entry/{distributionOrder}', [SROrderController::class, 'customerSaleEntryPost']);
 
-            Route::get('distribution-customer-damage-product-entry/{distributionOrder}', [DistributionOrderController::class, 'customerDamageProductEntry'])->name('distribution.customer_damage_product_entry');
-            Route::post('distribution-customer-damage-product-entry/{distributionOrder}', [DistributionOrderController::class, 'customerDamageProductEntryPost']);
+            Route::get('distribution-customer-damage-product-entry/{distributionOrder}', [SROrderController::class, 'customerDamageProductEntry'])->name('distribution.customer_damage_product_entry');
+            Route::post('distribution-customer-damage-product-entry/{distributionOrder}', [SROrderController::class, 'customerDamageProductEntryPost']);
 
 
 
-            Route::get('distribution-customer-sale-details/{distributionOrder}', [DistributionOrderController::class, 'customerSaleDetails'])->name('distribution.customer_sale_details');
-            Route::post('distribution/dsr-payment', [DistributionOrderController::class, 'payment'])->name('distribution.dsr_payment');
+            Route::get('distribution-customer-sale-details/{distributionOrder}', [SROrderController::class, 'customerSaleDetails'])->name('distribution.customer_sale_details');
+            Route::post('distribution/dsr-payment', [SROrderController::class, 'payment'])->name('distribution.dsr_payment');
         });
 
 

@@ -202,7 +202,7 @@ class InventoryController extends Controller
             })
             ->addColumn('distribution_order', function(InventoryLog $inventoryLog) {
                 if ($inventoryLog->distributionOrder){
-                    return '<a href="'.route('distribution.details',['distributionOrder'=>$inventoryLog->distribution_order_id,'type'=>$inventoryLog->distributionOrder->type]).'" class="btn btn-warning bg-gradient-warning btn-sm"><i class="fa fa-info-circle"></i> '.($inventoryLog->distributionOrder->order_no ?? '').'</a>';
+                    return '<a href="'.route('sr-sales.details',['distributionOrder'=>$inventoryLog->distribution_order_id,'type'=>$inventoryLog->distributionOrder->type]).'" class="btn btn-warning bg-gradient-warning btn-sm"><i class="fa fa-info-circle"></i> '.($inventoryLog->distributionOrder->order_no ?? '').'</a>';
                 }
             })
 

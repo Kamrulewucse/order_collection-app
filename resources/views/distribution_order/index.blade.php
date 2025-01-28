@@ -6,7 +6,7 @@
             <div class="card card-default">
                 <div class="card-header">
                     @if (auth()->user()->can($permission_create))
-                        <a href="{{ route('distribution.create',['type'=>request('type')]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Create New <i class="fa fa-plus"></i></a>
+                        <a href="{{ route('sr-sales.create',['type'=>request('type')]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Create New <i class="fa fa-plus"></i></a>
                     @endif
                 </div>
                 <div class="card-header">
@@ -107,7 +107,7 @@
                         preloaderToggle(true);
                         $.ajax({
                             method: "POST",
-                            url: "{{ route('distribution.hold_release_post', ['distributionOrder' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE',id),
+                            url: "{{ route('sr-sales.hold_release_post', ['distributionOrder' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE',id),
                             data: { id: id }
                         }).done(function( response ) {
                             preloaderToggle(false);
@@ -140,7 +140,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('distribution.datatable') }}",
+                    url: "{{ route('sr-sales.datatable') }}",
                     data: function (d) {
                         d.type = '{{ request('type')}}'
                         d.company = $("#company").val()

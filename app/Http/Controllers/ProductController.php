@@ -43,6 +43,12 @@ class ProductController extends Controller
                 return $btn;
 
             })
+            ->editColumn('purchase_price', function(Product $product) {
+               return number_format($product->purchase_price,2);
+            })
+            ->editColumn('selling_price', function(Product $product) {
+               return number_format($product->selling_price,2);
+            })
             ->addColumn('unit_name', function(Product $product) {
                return $product->unit->name ?? '';
             })
@@ -83,6 +89,8 @@ class ProductController extends Controller
                 'required','max:255',
                 Rule::unique('products')
             ],
+            'purchase_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
             'unit' => 'required',
             'category' => 'required',
             'status' => 'required|boolean', // Ensure 'status' is boolean
@@ -150,6 +158,8 @@ class ProductController extends Controller
                 Rule::unique('products')
                     ->ignore($product)
             ],
+            'purchase_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
             'unit' => 'required',
             'category' => 'required',
             'status' => 'required|boolean', // Ensure 'status' is boolean

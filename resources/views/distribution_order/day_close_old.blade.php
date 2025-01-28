@@ -41,9 +41,9 @@
                 <div class="card-header">
                     @if($distributionOrder->hold_release != 1)
                         @if($distributionOrder->close_status == 1)
-                            <a href="{{ route('distribution.day_close',['distributionOrder'=>$distributionOrder->id,'close_status'=>1,'type'=>1]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Edit <i class="fa fa-edit"></i></a>
+                            <a href="{{ route('sr-sales.day_close',['distributionOrder'=>$distributionOrder->id,'close_status'=>1,'type'=>1]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Edit <i class="fa fa-edit"></i></a>
                         @else
-                            <a href="{{ route('distribution.day_close',['distributionOrder'=>$distributionOrder->id,'type'=>1]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Edit Close <i class="fa fa-edit"></i></a>
+                            <a href="{{ route('sr-sales.day_close',['distributionOrder'=>$distributionOrder->id,'type'=>1]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Edit Close <i class="fa fa-edit"></i></a>
                         @endif
                             <a  data-id="{{ $distributionOrder->id }}" role="button" class="btn btn-warning bg-gradient-warning btn-sm day-close"><i class="fa fa-info-circle"></i> Hold Release</a>
                     @endif
@@ -52,7 +52,7 @@
                 <!-- /.card-header -->
                 <div class="card-body">
                     <div class="table-responsive" id="printAreaChallan">
-                        <form action="{{ route('distribution.day_close',['distributionOrder'=>$distributionOrder->id,'type'=>request('type')]) }}" method="post">
+                        <form action="{{ route('sr-sales.day_close',['distributionOrder'=>$distributionOrder->id,'type'=>request('type')]) }}" method="post">
                             @csrf
                             <div class="row" style="border-bottom: 1.5px solid #000;">
                                 <div class="col-12">
@@ -162,7 +162,7 @@
                                     </tfoot>
                             </table>
                         </form>
-                        <form action="{{ route('distribution.customer_sale_entry',['distributionOrder'=>$distributionOrder->id,'type'=>request('type')]) }}" method="post">
+                        <form action="{{ route('sr-sales.customer_sale_entry',['distributionOrder'=>$distributionOrder->id,'type'=>request('type')]) }}" method="post">
                             @csrf
 
                             <table id="table" class="table table-bordered mt-5">
@@ -391,7 +391,7 @@
                         preloaderToggle(true);
                         $.ajax({
                             method: "POST",
-                            url: "{{ route('distribution.hold_release_post', ['distributionOrder' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE',id),
+                            url: "{{ route('sr-sales.hold_release_post', ['distributionOrder' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE',id),
                             data: { id: id }
                         }).done(function( response ) {
                             preloaderToggle(false);

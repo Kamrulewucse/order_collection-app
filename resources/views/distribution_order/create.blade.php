@@ -12,7 +12,7 @@
 @section('content')
 
     <!-- form start -->
-    <form enctype="multipart/form-data" action="{{ route('distribution.store',['type'=>request('type')]) }}" class="form-horizontal" method="post">
+    <form enctype="multipart/form-data" action="{{ route('sr-sales.store',['type'=>request('type')]) }}" class="form-horizontal" method="post">
         @csrf
         <div class="row">
         <!-- left column -->
@@ -25,16 +25,16 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group {{ $errors->has('company') ? 'has-error' :'' }}">
-                                <label for="company">Company <span
+                            <div class="form-group {{ $errors->has('client') ? 'has-error' :'' }}">
+                                <label for="client">Client <span
                                         class="text-danger">*</span></label>
-                                <select class="form-control select2" id="company" name="company">
-                                    <option value="">Search Name of Company</option>
-                                    @foreach($companies as $company)
-                                        <option {{ request('company') == $company->id ? 'selected' : ''  }} value="{{ $company->id }}">{{ $company->name }}</option>
+                                <select class="form-control select2" id="client" name="client">
+                                    <option value="">Search Name of Client</option>
+                                    @foreach($clients as $client)
+                                        <option {{ request('client') == $client->id ? 'selected' : ''  }} value="{{ $client->id }}">{{ $client->name }}</option>
                                     @endforeach
                                 </select>
-                                @error('company')
+                                @error('client')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -50,7 +50,7 @@
                                <select class="form-control select2" id="select_product" name="select_product">
                                    <option value="">Search Name of Product</option>
                                    @foreach($products as $product)
-                                       <option {{ old('product') == $product->id ? 'selected' : ''  }} value="{{ $product->id }}">Brand: {{ $product->brand->name ?? '' }} - {{ $product->name }} - Code:{{ $product->code }} - {{ $product->unit->name ?? '' }}</option>
+                                       <option {{ old('product') == $product->id ? 'selected' : ''  }} value="{{ $product->id }}" data-purchase_price="{{$product->purchase_price}}" data-selling_price="{{$product->selling_price}}">{{ $product->name }} - Code:{{ $product->code }} - {{ $product->unit->name ?? '' }}</option>
                                    @endforeach
                                </select>
                            </div>
@@ -155,7 +155,7 @@
                     <!-- /.card-body -->
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary bg-gradient-primary btn-sm">Save</button>
-                        <a href="{{ route('distribution.index') }}" class="btn btn-danger bg-gradient-danger btn-sm float-right">Cancel</a>
+                        <a href="{{ route('sr-sales.index') }}" class="btn btn-danger bg-gradient-danger btn-sm float-right">Cancel</a>
                     </div>
                     <!-- /.card-footer -->
             </div>
@@ -172,12 +172,12 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group {{ $errors->has('sr') ? 'has-error' :'' }}">
-                                <label for="dsr">DSR <span
+                                <label for="sr">SR <span
                                         class="text-danger">*</span></label>
-                                <select class="form-control select2" id="dsr" name="dsr">
-                                    <option value="">Search Name of DSR</option>
-                                    @foreach($clients as $supplier)
-                                        <option {{ old('sr') == $supplier->id ? 'selected' : ''  }} value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                <select class="form-control select2" id="sr" name="sr">
+                                    <option value="">Search Name of SR</option>
+                                    @foreach($srs as $sr)
+                                        <option {{ old('sr') == $sr->id ? 'selected' : ''  }} value="{{ $sr->id }}">{{ $sr->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('sr')
@@ -280,6 +280,10 @@
 
             $('body').on('change', '#select_product', function (e) {
                 let product_id = $(this).val();
+                let purchasePrice = $(this).find(':selected').data('purchase_price');
+                let sellingPrice = $(this).find(':selected').data('selling_price');
+                alert(purchasePrice);
+                alert(sellingPrice);
                 let distribution_type = '{{ request('type') }}';
                 $('#stock_quantity').html(' ');
                 $('#add_unit_price').val(' ');

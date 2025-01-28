@@ -20,6 +20,8 @@
                                 <th>Code</th>
                                 <th>Category</th>
                                 <th>Unit</th>
+                                <th>Purchase Price</th>
+                                <th>Selling Price</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -49,6 +51,8 @@
                     {data: 'code', name: 'code'},
                     {data: 'category_name', name: 'category.name'},
                     {data: 'unit_name', name: 'unit.name'},
+                    {data: 'purchase_price', name: 'purchase_price'},
+                    {data: 'selling_price', name: 'selling_price'},
                     {
                         data: 'status',
                         name: 'status',

@@ -220,7 +220,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="modal-dsr-payment-form" method="POST" action="{{ route('distribution.dsr_payment',['type'=>request('type')]) }}">
+                    <form id="modal-dsr-payment-form" method="POST" action="{{ route('sr-sales.dsr_payment',['type'=>request('type')]) }}">
                         @csrf
                         <input type="hidden" id="order_id" name="order_id">
                         <div class="row">

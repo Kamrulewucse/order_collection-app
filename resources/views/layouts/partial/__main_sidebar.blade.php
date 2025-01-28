@@ -271,10 +271,10 @@
 
 
                 <?php
-                $subMenu = ['distribution.index','distribution.create','distribution.edit',
-                    'distribution.details','distribution.day_close',
-                    'distribution.customer_sale_details','distribution.customer_sale_entry',
-                    'distribution.customer_damage_product_entry','distribution.final_details',
+                $subMenu = ['sr-sales.index','sr-sales.create','sr-sales.edit',
+                    'sr-sales.details','sr-sales.day_close',
+                    'sr-sales.customer_sale_details','sr-sales.customer_sale_entry',
+                    'sr-sales.customer_damage_product_entry','sr-sales.final_details',
                     'customer-payments'
                 ];
                 ?>
@@ -284,38 +284,38 @@
                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) && request('type') == 1 ? 'active' : '' }}">
                             <i class="nav-icon fa-solid fa-shopping-cart"></i>
                             <p>
-                                Distribution Sales
+                                SR Sales
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
                             <?php
-                            $subSubMenu = ['distribution.create'];
+                            $subSubMenu = ['sr-sales.create'];
                             ?>
                             @if(auth()->user()->can('distribution_create'))
                                 <li class="nav-item">
-                                    <a href="{{ route('distribution.create',['type'=>1]) }}"
+                                    <a href="{{ route('sr-sales.create',['type'=>1]) }}"
                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) && request('type') == 1 ? 'active' : '' }}">
                                         <i class="fa fa-plus nav-icon"></i>
-                                        <p>Distribution Order Create</p>
+                                        <p>SR Order Create</p>
                                     </a>
                                 </li>
                             @endif
                             <?php
-                            $subSubMenu = ['distribution.index', 'distribution.edit',
-                                'distribution.details','distribution.day_close',
-                                'distribution.customer_sale_details',
-                                'distribution.customer_sale_entry',
-                                'distribution.customer_damage_product_entry',
-                                'distribution.final_details'
+                            $subSubMenu = ['sr-sales.index', 'sr-sales.edit',
+                                'sr-sales.details','sr-sales.day_close',
+                                'sr-sales.customer_sale_details',
+                                'sr-sales.customer_sale_entry',
+                                'sr-sales.customer_damage_product_entry',
+                                'sr-sales.final_details'
                                 ];
                             ?>
                             @if(auth()->user()->can('distribution_list'))
                                 <li class="nav-item">
-                                    <a href="{{ route('distribution.index',['type'=>1]) }}"
+                                    <a href="{{ route('sr-sales.index',['type'=>1]) }}"
                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) && request('type') == 1 ? 'active' : '' }}">
                                         <i class="fa fa-history nav-icon"></i>
-                                        <p>Distribution Order List</p>
+                                        <p>SR Order List</p>
                                     </a>
                                 </li>
 
