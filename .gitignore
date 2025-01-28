@@ -17,7 +17,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/storage/*
-!/storage/framework/
-!/storage/logs/
+storage/*
+storage/framework/*
+storage/logs/*
+storage/views/*
 /storage/logs/laravel.log

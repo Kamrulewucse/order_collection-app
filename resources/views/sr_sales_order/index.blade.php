@@ -107,7 +107,7 @@
                         preloaderToggle(true);
                         $.ajax({
                             method: "POST",
-                            url: "{{ route('sr-sales.hold_release_post', ['distributionOrder' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE',id),
+                            url: "{{ route('distribution.hold_release_post', ['distributionOrder' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE',id),
                             data: { id: id }
                         }).done(function( response ) {
                             preloaderToggle(false);

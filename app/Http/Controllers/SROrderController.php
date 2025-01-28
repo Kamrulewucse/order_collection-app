@@ -41,7 +41,7 @@ class SROrderController extends Controller
             abort(403, 'Unauthorized');
         }
         $companies = Client::where('status', 1)->where('type', 1)->get();
-        return view('distribution_order.index', compact(
+        return view('sr_sales_order.index', compact(
             'paymentModes',
             'pageTitle',
             'permission_create',
@@ -136,7 +136,7 @@ class SROrderController extends Controller
         if (!auth()->user()->hasPermissionTo($permission)) {
             abort(403, 'Unauthorized');
         }
-        return view('distribution_order.create', compact(
+        return view('sr_sales_order.create', compact(
             'srs',
             'products',
             'pageTitle',
@@ -539,7 +539,7 @@ class SROrderController extends Controller
 
 
 
-        return view('distribution_order.day_close_old', compact(
+        return view('sr_sales_order.day_close_old', compact(
             'distributionOrder',
             'pageTitle',
             'products',
@@ -1061,7 +1061,7 @@ class SROrderController extends Controller
         // $paymentModes = AccountHead::where('payment_mode','>',0)->get();
         $paymentMode = AccountHead::where('id', 1)->first();
 
-        return view('distribution_order.customer_sale_entry', compact(
+        return view('sr_sales_order.customer_sale_entry', compact(
             'distributionOrder',
             'pageTitle',
             'products',
@@ -1369,7 +1369,7 @@ class SROrderController extends Controller
 
         $pageTitle = 'Customer Damage Product Entry Add: ' . $distributionOrder->order_no;
 
-        return view('distribution_order.customer_damage_product_entry', compact(
+        return view('sr_sales_order.customer_damage_product_entry', compact(
             'distributionOrder',
             'pageTitle'
         ));
@@ -1479,7 +1479,7 @@ class SROrderController extends Controller
         }
         $paymentModes = AccountHead::where('payment_mode', '>', 0)->get();
 
-        return view('distribution_order.details', compact(
+        return view('sr_sales_order.details', compact(
             'distributionOrder',
             'pageTitle',
             'paymentModes'
@@ -1500,7 +1500,7 @@ class SROrderController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        return view('distribution_order.final_details', compact(
+        return view('sr_sales_order.final_details', compact(
             'distributionOrder',
             'pageTitle'
         ));
@@ -1657,7 +1657,7 @@ class SROrderController extends Controller
             abort(403, 'Unauthorized');
         }
         $companies = Client::where('status', 1)->where('type', 1)->get();
-        return view('distribution_order.customer_payments', compact(
+        return view('sr_sales_order.customer_payments', compact(
             'paymentMode',
             'pageTitle',
             'permission_create',
@@ -1729,7 +1729,7 @@ class SROrderController extends Controller
             ->with('saleOrderItems')
             ->get();
 
-        return view('distribution_order.customer_sale_details', compact(
+        return view('sr_sales_order.customer_sale_details', compact(
             'distributionOrder',
             'pageTitle',
             'saleOrders'

@@ -44,7 +44,7 @@
                 <div class="card-header">
                    <div class="row">
 
-                       <div class="col-md-6">
+                       <div class="col-md-5">
                            <div class="form-group">
                                <label for="select_product">Product <span class="text-danger">*</span></label>
                                <select class="form-control select2" id="select_product" name="select_product">
@@ -72,7 +72,13 @@
                        </div>
                        <div class="col-md-2">
                            <div class="form-group">
-                               <label for="add_unit_price">Unit Price <span class="text-danger">*</span></label>
+                               <label for="add_purchase_price">Purchase Price <span class="text-danger">*</span></label>
+                               <input type="number" step="any" class="form-control" id="add_purchase_price" placeholder="Purchase Price">
+                           </div>
+                       </div>
+                       <div class="col-md-2">
+                           <div class="form-group">
+                               <label for="add_unit_price">Selling Price <span class="text-danger">*</span></label>
                                <input type="number" step="any" class="form-control" id="add_unit_price" placeholder="Unit Price">
                            </div>
                        </div>
@@ -96,7 +102,8 @@
                                            <th class="text-center" width="12%">Damage Return Qty</th>
                                            @endif
                                            <th class="text-center" width="12%">Sale Qty <span class="text-danger">*</span></th>
-                                           <th class="text-center" width="15%">Unit Price <span class="text-danger">*</span></th>
+                                           <th class="text-center" width="15%">Purchase Price</th>
+                                           <th class="text-center" width="15%">Selling Price <span class="text-danger">*</span></th>
                                            <th class="text-center" width="15%">Total Price</th>
                                            <th class="text-center" width="5%"></th>
                                        </tr>
@@ -126,6 +133,11 @@
                                                         </div>
                                                     </td>
                                                     <td class="text-right">
+                                                        <div class="form-group mb-0  {{ $errors->has('purchase_price.'.$loop->index) ? 'has-error' :'' }}">
+                                                            <input type="number" step="any" value="{{ old('purchase_price.'.$loop->index) }}" class="form-control text-right purchase_price" name="purchase_price[]">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-right">
                                                         <div class="form-group mb-0  {{ $errors->has('product_unit_price.'.$loop->index) ? 'has-error' :'' }}">
                                                             <input type="number" step="any" value="{{ old('product_unit_price.'.$loop->index) }}" class="form-control text-right product_unit_price" name="product_unit_price[]">
                                                         </div>
@@ -143,8 +155,8 @@
                                             <th  class="text-right" id="total_damage_return_quantity"></th>
                                             @endif
                                             <th  class="text-right" id="total_quantity"></th>
-                                            <th  class="text-right" id="total_unit_price"></th>
                                             <th  class="text-right" id="total_purchase_price"></th>
+                                            <th  class="text-right" id="total_selling_price"></th>
                                             <th></th>
                                         </tr>
                                     </tfoot>
@@ -239,6 +251,11 @@
             </td>
             <td class="text-right">
                 <div class="form-group mb-0">
+                    <input type="number" step="any" class="form-control text-right purchase_price" name="purchase_price[]">
+                </div>
+            </td>
+            <td class="text-right">
+                <div class="form-group mb-0">
                     <input type="number" step="any" class="form-control text-right product_unit_price" name="product_unit_price[]">
                 </div>
             </td>
@@ -282,26 +299,26 @@
                 let product_id = $(this).val();
                 let purchasePrice = $(this).find(':selected').data('purchase_price');
                 let sellingPrice = $(this).find(':selected').data('selling_price');
-                alert(purchasePrice);
-                alert(sellingPrice);
+                $('#add_purchase_price').val(purchasePrice);
+                $('#add_unit_price').val(sellingPrice);
                 let distribution_type = '{{ request('type') }}';
                 $('#stock_quantity').html(' ');
-                $('#add_unit_price').val(' ');
-                if (product_id != '' && distribution_type == 1){
-                    $.ajax({
-                        method: "GET",
-                        url: "{{ route('get_stock_info') }}",
-                        data: {product_id : product_id }
-                    }).done(function (response) {
-                        if (response.inventory && response.inventory.quantity > 0){
-                            $('#add_unit_price').val(response.inventory.selling_price ?? '');
-                            $('#stock_quantity').html('<span class="text-success"><b>In Stock: </b>'+response.inventory.quantity+'</span>');
-                        }else{
-                            $('#stock_quantity').html('<span class="text-danger"><b>Out Stock</b></span>');
+                // $('#add_unit_price').val(' ');
+                // if (product_id != '' && distribution_type == 1){
+                //     $.ajax({
+                //         method: "GET",
+                //         url: "{{ route('get_stock_info') }}",
+                //         data: {product_id : product_id }
+                //     }).done(function (response) {
+                //         if (response.inventory && response.inventory.quantity > 0){
+                //             // $('#add_unit_price').val(response.inventory.selling_price ?? '');
+                //             $('#stock_quantity').html('<span class="text-success"><b>In Stock: </b>'+response.inventory.quantity+'</span>');
+                //         }else{
+                //             $('#stock_quantity').html('<span class="text-danger"><b>Out Stock</b></span>');
 
-                        }
-                    });
-                }
+                //         }
+                //     });
+                // }
             });
 
             $('body').on('click', '#add_new_btn', function (e) {
@@ -309,6 +326,7 @@
                 let selectProductName = $("#select_product option:selected").text();
                 let addDamageReturnQuantity = $('#add_damage_return_quantity').val();
                 let addQuantity = $('#add_quantity').val();
+                let addPurchasePrice = $('#add_purchase_price').val();
                 let addUnitPrice = $('#add_unit_price').val();
                 if (selectProduct == ''){
                     Swal.fire({
@@ -328,6 +346,19 @@
                         icon: 'error',
                         title: 'Oops...',
                         text: 'Please, type product quantity !',
+                    });
+                    // Play the notification sound
+                    let notificationSound = document.getElementById('notification-error-audio');
+                    if (notificationSound) {
+                        notificationSound.play();
+                    }
+                    return false;
+                }
+                if (addPurchasePrice == ''){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please, type product purchase price !',
                     });
                     // Play the notification sound
                     let notificationSound = document.getElementById('notification-error-audio');
@@ -364,7 +395,7 @@
                     return false;
                 }
 
-                if (selectProduct != '' && addQuantity != '' && addUnitPrice != '') {
+                if (selectProduct != '' && addQuantity != '' && addUnitPrice != '' && addPurchasePrice != '') {
                     var addMoreSound = document.getElementById("add_more_sound");
                     addMoreSound.play();
                     var html = $('#template-product').html();
@@ -377,6 +408,7 @@
                     item.closest('tr').find('.product_id').val($("#select_product option:selected").val());
                     item.closest('tr').find('.damage_return_product_qty').val(addDamageReturnQuantity);
                     item.closest('tr').find('.product_qty').val(addQuantity);
+                    item.closest('tr').find('.purchase_price').val(addPurchasePrice);
                     item.closest('tr').find('.product_unit_price').val(addUnitPrice);
                     productIds.push(selectProduct);
                     item.show();
@@ -436,18 +468,23 @@
                 let product_qty = parseFloat($('.product_qty:eq('+i+')').val());
                 product_qty = (isNaN(product_qty) || product_qty < 0) ? 0 : product_qty;
 
+                let purchase_price = parseFloat($('.purchase_price:eq('+i+')').val());
+                purchase_price = (isNaN(purchase_price) || purchase_price < 0) ? 0 : purchase_price;
+
                 let product_unit_price = parseFloat($('.product_unit_price:eq('+i+')').val());
                 product_unit_price = (isNaN(product_unit_price) || product_unit_price < 0) ? 0 : product_unit_price;
 
                 $('.total-purchase-cost:eq('+i+')').text((product_qty * product_unit_price).toFixed(2) );
                 total_damage_return_quantity += damage_return_product_qty;
                 total_quantity += product_qty;
-                total_purchase_price += product_qty * product_unit_price;
+                total_purchase_price += product_qty * purchase_price;
+                total_selling_price += product_qty * product_unit_price;
             });
 
             $('#total_damage_return_quantity').text(total_damage_return_quantity);
             $('#total_quantity').text(total_quantity);
             $('#total_purchase_price').text(total_purchase_price.toFixed(2));
+            $('#total_selling_price').text(total_selling_price.toFixed(2));
 
             if (rows.length > 0){
                 $("#footer_area").show();
