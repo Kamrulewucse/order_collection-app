@@ -75,7 +75,7 @@ class SROrderController extends Controller
                             $icon = '<i class="fa fa-plus"></i>';
                         }
 
-                        $btn .= ' <a  href="' . route('sr-sales.day_close', ['distributionOrder' => $distributionOrder->id, 'type' => $distributionOrder->type]) . '" class="dropdown-item">' . $icon . ' Distribution Invoice</a>';
+                        $btn .= ' <a  href="' . route('distribution.day_close', ['distributionOrder' => $distributionOrder->id, 'type' => $distributionOrder->type]) . '" class="dropdown-item">' . $icon . ' Distribution Invoice</a>';
                     }
                 }
                 if ($distributionOrder->type == 1) {
@@ -87,7 +87,7 @@ class SROrderController extends Controller
                     $text = 'Distribution Receipt';
                     $textFinal = 'Final Report';
                     // $btn .= ' <a href="' . route('sr-sales.details', ['distributionOrder' => $distributionOrder->id, 'type' => $distributionOrder->type]) . '" class="dropdown-item"><i class="fa fa-info-circle"></i> '.$text.'</a>';
-                    $btn .= ' <a href="' . route('sr-sales.final_details', ['distributionOrder' => $distributionOrder->id, 'type' => $distributionOrder->type]) . '" class="dropdown-item"><i class="fa fa-info-circle"></i> ' . $textFinal . '</a>';
+                    $btn .= ' <a href="' . route('distribution.final_details', ['distributionOrder' => $distributionOrder->id, 'type' => $distributionOrder->type]) . '" class="dropdown-item"><i class="fa fa-info-circle"></i> ' . $textFinal . '</a>';
                 }
 
                 if ($distributionOrder->type == 1 && $distributionOrder->close_status == 0) {
@@ -95,8 +95,8 @@ class SROrderController extends Controller
                 }
                 return dropdownMenuContainer($btn);
             })
-            ->addColumn('dsr_name', function (DistributionOrder $distributionOrder) {
-                return $distributionOrder->dsr->name ?? '';
+            ->addColumn('sr_name', function (DistributionOrder $distributionOrder) {
+                return $distributionOrder->sr->name ?? '';
             })
             ->addColumn('company_name', function (DistributionOrder $distributionOrder) {
                 return $distributionOrder->company->name ?? '';
@@ -149,6 +149,7 @@ class SROrderController extends Controller
      */
     public function store(Request $request)
     {
+        // return($request->all());
         if ($request->type == 1) {
             $permission = 'distribution_create';
         } else {
@@ -160,8 +161,10 @@ class SROrderController extends Controller
         // Validate the request data
         $validatedData = $request->validate([
             'sr' => 'required',
+            'client' => 'required',
             'product_id.*' => 'required',
             'product_qty.*' => 'required|numeric',
+            'purchase_price.*' => 'required|numeric',
             'product_unit_price.*' => 'required|numeric',
             'date' => 'required|date',
             'notes' => 'nullable|string|max:255',
@@ -172,8 +175,8 @@ class SROrderController extends Controller
         try {
             $distribution_order = new DistributionOrder();
             $distribution_order->type = $request->type;
-            $distribution_order->dsr_id = $request->dsr;
-            $distribution_order->company_id = $request->company;
+            $distribution_order->sr_id = $request->sr;
+            $distribution_order->client_id = $request->client;
             $distribution_order->total = 0;
             $distribution_order->paid = 0;
             $distribution_order->due = 0;
@@ -183,54 +186,47 @@ class SROrderController extends Controller
             $distribution_order->date = Carbon::parse($request->date);
             $distribution_order->save();
             if ($request->type == 1) {
-                $distribution_order->order_no = 'DIST-' . date('Ymd') . '-' . $distribution_order->id;
+                $distribution_order->order_no = 'SRO-' . date('Ymd') . '-' . $distribution_order->id;
             } else {
-                $distribution_order->order_no = 'DMG-' . date('Ymd') . '-' . $distribution_order->id;
+                $distribution_order->order_no = 'SRDO-' . date('Ymd') . '-' . $distribution_order->id;
             }
             $distribution_order->save();
 
             $costingTotal = 0;
             $total = 0;
-            $damageProductReturnTotal = 0;
-            $damageProductReturnCostingTotal = 0;
             foreach ($request->product_id as $key => $productId) {
                 $product = Product::find($request->product_id[$key]);
 
-                $inventory = Inventory::where('product_id', $product->id)->first();
-
-                if ($request->type == 1 && $inventory->quantity < ($request->product_qty[$key] + ($request->damage_return_product_qty[$key] ?? 0))) {
-                    throw new \Exception("$product->name insufficient quantity: $inventory->quantity");
-                }
-
+                $product->update([
+                    'purchase_price' => $request->purchase_unit_price[$key],
+                    'selling_price' => $request->selling_unit_price[$key],
+                ]);
                 $purchaseItem = new DistributionOrderItem();
                 $purchaseItem->distribution_order_id = $distribution_order->id;
+                $purchaseItem->client_id = $request->client;
+                $purchaseItem->sr_id = $request->sr;
                 $purchaseItem->product_id = $product->id;
                 $purchaseItem->product_code = $product->code;
                 $purchaseItem->damage_quantity = $request->damage_return_product_qty[$key] ?? 0;
                 $purchaseItem->distribute_quantity = $request->product_qty[$key];
                 $purchaseItem->sale_quantity = 0;
-                $purchaseItem->purchase_unit_price = $inventory->average_purchase_unit_price ?? 0;
-                $purchaseItem->selling_unit_price = $request->product_unit_price[$key];
+                $purchaseItem->purchase_unit_price = $request->purchase_unit_price[$key];
+                $purchaseItem->selling_unit_price = $request->selling_unit_price[$key];
                 $purchaseItem->save();
 
-                $total += ($request->product_qty[$key] * $request->product_unit_price[$key]);
-                $costingTotal += ($request->product_qty[$key] ?? 0) * ($inventory->average_purchase_unit_price ?? $request->product_unit_price[$key]);
-                //If any Damage product refund
-                $damageProductReturnTotal += ($request->damage_return_product_qty[$key] ?? 0) * ($request->product_unit_price[$key]);
-                $damageProductReturnCostingTotal += ($request->damage_return_product_qty[$key] ?? 0) * ($inventory->average_purchase_unit_price ?? $request->product_unit_price[$key]);
-
+                $total += ($request->product_qty[$key] * $request->selling_unit_price[$key]);
+                $costingTotal += ($request->product_qty[$key] ?? 0) * $request->purchase_unit_price[$key];
 
                 if ($request->type == 1) {
-                    $inventory->decrement('quantity', ($request->product_qty[$key] + ($request->damage_return_product_qty[$key] ?? 0)));
                     //Inventory Log
                     $inventoryLog = new InventoryLog();
                     $inventoryLog->type = 2; //Distribution Out
-                    $inventoryLog->inventory_id = $inventory->id;
-                    $inventoryLog->supplier_id = $request->dsr;
+                    $inventoryLog->sr_id = $request->sr;
+                    $inventoryLog->client_id = $request->client;
                     $inventoryLog->distribution_order_id = $distribution_order->id;
                     $inventoryLog->product_id = $product->id;
                     $inventoryLog->quantity = $request->product_qty[$key];
-                    $inventoryLog->unit_price = $request->product_unit_price[$key];
+                    $inventoryLog->unit_price = $request->selling_unit_price[$key];
                     $inventoryLog->product_code = $product->code;
                     $inventoryLog->notes = $request->notes;
                     $inventoryLog->user_id = auth()->id();
@@ -239,12 +235,12 @@ class SROrderController extends Controller
                     if (($request->damage_return_product_qty[$key] ?? 0) > 0) {
                         $inventoryLog = new InventoryLog();
                         $inventoryLog->type = 5; // Damage product refund
-                        $inventoryLog->inventory_id = $inventory->id;
-                        $inventoryLog->supplier_id = $request->dsr;
+                        $inventoryLog->sr_id = $request->sr;
+                        $inventoryLog->client_id = $request->client;
                         $inventoryLog->distribution_order_id = $distribution_order->id;
                         $inventoryLog->product_id = $product->id;
                         $inventoryLog->quantity = $request->damage_return_product_qty[$key] ?? 0;
-                        $inventoryLog->unit_price = $request->product_unit_price[$key];
+                        $inventoryLog->unit_price = $request->selling_unit_price[$key];
                         $inventoryLog->product_code = $product->code;
                         $inventoryLog->notes = $request->notes;
                         $inventoryLog->user_id = auth()->id();
@@ -259,244 +255,12 @@ class SROrderController extends Controller
             $distribution_order->costing_total = $costingTotal;
             $distribution_order->save();
 
-            // if ($request->type == 1) {
-            //     //1.Journal Voucher: Revenue Recognition
-
-            //     $payeeId = AccountHead::where('supplier_id', $distribution_order->dsr_id)->first()->id ?? null;
-            //     $voucherNoGroupSl = $voucherNoGroupSl = Transaction::withTrashed()
-            //             ->where('voucher_type', VoucherType::$JOURNAL_VOUCHER)
-            //             ->max('voucher_no_group_sl') + 1;
-
-            //     $voucherNo = 'JV-' . $voucherNoGroupSl;
-
-            //     $voucher = new Voucher();
-            //     $voucher->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $voucher->amount = $total;
-            //     $voucher->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $voucher->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $voucher->voucher_no = $voucherNo;
-            //     $voucher->account_head_payee_depositor_id = $payeeId;
-            //     $voucher->company_id = $request->company;
-            //     $voucher->distribution_order_id = $distribution_order->id;
-            //     $voucher->notes = $request->notes;
-            //     $voucher->user_id = auth()->id();
-            //     $voucher->save();
-
-            //     //DEBIT:Accounts Receivable (Asset account)
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = $payeeId;//DSR
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$DEBIT;
-            //     $transaction->amount = $total;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-            //     //Credit:Sales Revenue (Revenue account)
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = AccountHead::find(114)->id ?? 114;//Sales Revenue (Revenue account)
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$CREDIT;
-            //     $transaction->amount = $total;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-
-            //     //2.Journal Voucher: Cost of Goods Sold:
-            //     $payeeId = AccountHead::where('supplier_id', $distribution_order->dsr_id)->first()->id ?? null;
-            //     $voucherNoGroupSl = $voucherNoGroupSl = Transaction::withTrashed()
-            //             ->where('voucher_type', VoucherType::$JOURNAL_VOUCHER)
-            //             ->max('voucher_no_group_sl') + 1;
-
-            //     $voucherNo = 'JV-' . $voucherNoGroupSl;
-
-            //     $voucher = new Voucher();
-            //     $voucher->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $voucher->amount = $costingTotal;
-            //     $voucher->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $voucher->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $voucher->voucher_no = $voucherNo;
-            //     $voucher->account_head_payee_depositor_id = $payeeId;
-            //     $voucher->company_id = $request->company;
-            //     $voucher->distribution_order_id = $distribution_order->id;
-            //     $voucher->notes = $request->notes;
-            //     $voucher->user_id = auth()->id();
-            //     $voucher->save();
-
-
-            //     //Debit: Cost of Goods Sold (Expense account)
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = AccountHead::find(2)->id ?? 2;// Cost of Goods Sold
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$DEBIT;
-            //     $transaction->amount = $costingTotal;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-            //     //Credit: Inventory (Asset account)
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = AccountHead::find(113)->id ?? 113;//Inventory (Asset account)
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$CREDIT;
-            //     $transaction->amount = $costingTotal;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-
-            // }
-            // //Damage Product Journal
-            // if ($request->type == 1 && $damageProductReturnTotal > 0) {
-            //     //1. Reverse Sales Revenue Journal Entry
-
-            //     $payeeId = AccountHead::where('supplier_id', $distribution_order->dsr_id)->first()->id ?? null;
-            //     $voucherNoGroupSl = $voucherNoGroupSl = Transaction::withTrashed()
-            //             ->where('voucher_type', VoucherType::$JOURNAL_VOUCHER)
-            //             ->max('voucher_no_group_sl') + 1;
-
-            //     $voucherNo = 'JV-' . $voucherNoGroupSl;
-
-            //     $voucher = new Voucher();
-            //     $voucher->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $voucher->amount = $damageProductReturnTotal;
-            //     $voucher->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $voucher->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $voucher->voucher_no = $voucherNo;
-            //     $voucher->account_head_payee_depositor_id = $payeeId;
-            //     $voucher->company_id = $request->company;
-            //     $voucher->distribution_order_id = $distribution_order->id;
-            //     $voucher->notes = $request->notes;
-            //     $voucher->user_id = auth()->id();
-            //     $voucher->save();
-
-            //     //Debit:Sales Returns and Allowances
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = AccountHead::find(116)->id ?? 116;//Sales Returns and Allowances
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$DEBIT;
-            //     $transaction->amount = $damageProductReturnTotal;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-            //     //Credit:Accounts Receivable (Asset account)
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = $payeeId;//DSR
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$CREDIT;
-            //     $transaction->amount = $damageProductReturnTotal;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-
-            //     //2.Reverse COGS Journal Entry:
-            //     $payeeId = AccountHead::where('supplier_id', $distribution_order->dsr_id)->first()->id ?? null;
-            //     $voucherNoGroupSl = $voucherNoGroupSl = Transaction::withTrashed()
-            //             ->where('voucher_type', VoucherType::$JOURNAL_VOUCHER)
-            //             ->max('voucher_no_group_sl') + 1;
-
-            //     $voucherNo = 'JV-' . $voucherNoGroupSl;
-
-            //     $voucher = new Voucher();
-            //     $voucher->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $voucher->amount = $damageProductReturnCostingTotal;
-            //     $voucher->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $voucher->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $voucher->voucher_no = $voucherNo;
-            //     $voucher->account_head_payee_depositor_id = $payeeId;
-            //     $voucher->company_id = $request->company;
-            //     $voucher->distribution_order_id = $distribution_order->id;
-            //     $voucher->notes = $request->notes;
-            //     $voucher->user_id = auth()->id();
-            //     $voucher->save();
-
-
-            //     //Debit: Inventory (Asset account)
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = AccountHead::find(113)->id ?? 113;//Inventory (Asset account)
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$DEBIT;
-            //     $transaction->amount = $damageProductReturnCostingTotal;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-            //     //Credit: Cost of Goods Sold (Expense account)
-            //     $transaction = new Transaction();
-            //     $transaction->voucher_id = $voucher->id;
-            //     $transaction->account_head_id = AccountHead::find(2)->id ?? 2;// Cost of Goods Sold
-            //     $transaction->voucher_type = VoucherType::$JOURNAL_VOUCHER;
-            //     $transaction->transaction_type = TransactionType::$CREDIT;
-            //     $transaction->amount = $damageProductReturnCostingTotal;
-            //     $transaction->date = Carbon::parse($request->date)->format('Y-m-d');
-            //     $transaction->voucher_no_group_sl = $voucherNoGroupSl;
-            //     $transaction->voucher_no = $voucherNo;
-            //     $transaction->account_head_payee_depositor_id = $payeeId;
-            //     $transaction->company_id = $request->company;
-            //     $transaction->distribution_order_id = $distribution_order->id;
-            //     $transaction->notes = $request->notes;
-            //     $transaction->user_id = auth()->id();
-            //     $transaction->save();
-
-            // }
 
             // Commit the transaction
             DB::commit();
 
             // Redirect to the index page with a success message
-            return redirect()->route('sr-sales.day_close', ['distributionOrder' => $distribution_order->id, 'type' => $request->type])->with('success', 'Distribution sales created successfully');
+            return redirect()->route('distribution.day_close', ['distributionOrder' => $distribution_order->id, 'type' => $request->type])->with('success', 'Distribution sales created successfully');
         } catch (\Exception $e) {
             // Roll back the transaction in case of an error
             DB::rollback();
@@ -519,10 +283,8 @@ class SROrderController extends Controller
         }
 
         $products = Product::whereIn('id', $distributionOrder->distributionOrderItems->pluck('product_id'))->get();
-        $customers = Client::where('type', 3) //3=Customer
-            ->where('company_id', $distributionOrder->company_id)
-            ->get();
-        $pageTitle = 'Distribution Invoice';
+        $clients = Client::where('type',4)->get();
+        $pageTitle = 'SR Sales Invoice';
 
         // $paymentModes = AccountHead::where('payment_mode','>',0)->get();
         $paymentMode = AccountHead::where('id', 1)->first();
@@ -539,11 +301,11 @@ class SROrderController extends Controller
 
 
 
-        return view('sr_sales_order.day_close_old', compact(
+        return view('sr_sales_order.day_close', compact(
             'distributionOrder',
             'pageTitle',
             'products',
-            'customers',
+            'clients',
             'paymentMode'
         ));
     }

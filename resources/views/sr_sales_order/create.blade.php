@@ -28,7 +28,7 @@
                             <div class="form-group {{ $errors->has('client') ? 'has-error' :'' }}">
                                 <label for="client">Client <span
                                         class="text-danger">*</span></label>
-                                <select class="form-control select2" id="client" name="client">
+                                <select class="form-control select2" id="client" name="client" required>
                                     <option value="">Search Name of Client</option>
                                     @foreach($clients as $client)
                                         <option {{ request('client') == $client->id ? 'selected' : ''  }} value="{{ $client->id }}">{{ $client->name }}</option>
@@ -72,8 +72,8 @@
                        </div>
                        <div class="col-md-2">
                            <div class="form-group">
-                               <label for="add_purchase_price">Purchase Price <span class="text-danger">*</span></label>
-                               <input type="number" step="any" class="form-control" id="add_purchase_price" placeholder="Purchase Price">
+                               <label for="add_purchase_unit_price">Purchase Price <span class="text-danger">*</span></label>
+                               <input type="number" step="any" class="form-control" id="add_purchase_unit_price" placeholder="Purchase Price">
                            </div>
                        </div>
                        <div class="col-md-2">
@@ -133,13 +133,13 @@
                                                         </div>
                                                     </td>
                                                     <td class="text-right">
-                                                        <div class="form-group mb-0  {{ $errors->has('purchase_price.'.$loop->index) ? 'has-error' :'' }}">
-                                                            <input type="number" step="any" value="{{ old('purchase_price.'.$loop->index) }}" class="form-control text-right purchase_price" name="purchase_price[]">
+                                                        <div class="form-group mb-0  {{ $errors->has('purchase_unit_price.'.$loop->index) ? 'has-error' :'' }}">
+                                                            <input type="number" step="any" value="{{ old('purchase_unit_price.'.$loop->index) }}" class="form-control text-right purchase_unit_price" name="purchase_unit_price[]">
                                                         </div>
                                                     </td>
                                                     <td class="text-right">
-                                                        <div class="form-group mb-0  {{ $errors->has('product_unit_price.'.$loop->index) ? 'has-error' :'' }}">
-                                                            <input type="number" step="any" value="{{ old('product_unit_price.'.$loop->index) }}" class="form-control text-right product_unit_price" name="product_unit_price[]">
+                                                        <div class="form-group mb-0  {{ $errors->has('selling_unit_price.'.$loop->index) ? 'has-error' :'' }}">
+                                                            <input type="number" step="any" value="{{ old('selling_unit_price.'.$loop->index) }}" class="form-control text-right selling_unit_price" name="selling_unit_price[]">
                                                         </div>
                                                     </td>
                                                     <td class="text-right total-purchase-cost"></td>
@@ -186,7 +186,7 @@
                             <div class="form-group {{ $errors->has('sr') ? 'has-error' :'' }}">
                                 <label for="sr">SR <span
                                         class="text-danger">*</span></label>
-                                <select class="form-control select2" id="sr" name="sr">
+                                <select class="form-control select2" id="sr" name="sr" required>
                                     <option value="">Search Name of SR</option>
                                     @foreach($srs as $sr)
                                         <option {{ old('sr') == $sr->id ? 'selected' : ''  }} value="{{ $sr->id }}">{{ $sr->name }}</option>
@@ -251,12 +251,12 @@
             </td>
             <td class="text-right">
                 <div class="form-group mb-0">
-                    <input type="number" step="any" class="form-control text-right purchase_price" name="purchase_price[]">
+                    <input type="number" step="any" class="form-control text-right purchase_unit_price" name="purchase_unit_price[]">
                 </div>
             </td>
             <td class="text-right">
                 <div class="form-group mb-0">
-                    <input type="number" step="any" class="form-control text-right product_unit_price" name="product_unit_price[]">
+                    <input type="number" step="any" class="form-control text-right selling_unit_price" name="selling_unit_price[]">
                 </div>
             </td>
             <td class="text-right total-purchase-cost"></td>
@@ -299,7 +299,7 @@
                 let product_id = $(this).val();
                 let purchasePrice = $(this).find(':selected').data('purchase_price');
                 let sellingPrice = $(this).find(':selected').data('selling_price');
-                $('#add_purchase_price').val(purchasePrice);
+                $('#add_purchase_unit_price').val(purchasePrice);
                 $('#add_unit_price').val(sellingPrice);
                 let distribution_type = '{{ request('type') }}';
                 $('#stock_quantity').html(' ');
@@ -326,7 +326,7 @@
                 let selectProductName = $("#select_product option:selected").text();
                 let addDamageReturnQuantity = $('#add_damage_return_quantity').val();
                 let addQuantity = $('#add_quantity').val();
-                let addPurchasePrice = $('#add_purchase_price').val();
+                let addPurchasePrice = $('#add_purchase_unit_price').val();
                 let addUnitPrice = $('#add_unit_price').val();
                 if (selectProduct == ''){
                     Swal.fire({
@@ -408,8 +408,8 @@
                     item.closest('tr').find('.product_id').val($("#select_product option:selected").val());
                     item.closest('tr').find('.damage_return_product_qty').val(addDamageReturnQuantity);
                     item.closest('tr').find('.product_qty').val(addQuantity);
-                    item.closest('tr').find('.purchase_price').val(addPurchasePrice);
-                    item.closest('tr').find('.product_unit_price').val(addUnitPrice);
+                    item.closest('tr').find('.purchase_unit_price').val(addPurchasePrice);
+                    item.closest('tr').find('.selling_unit_price').val(addUnitPrice);
                     productIds.push(selectProduct);
                     item.show();
                     calculate();
@@ -468,17 +468,17 @@
                 let product_qty = parseFloat($('.product_qty:eq('+i+')').val());
                 product_qty = (isNaN(product_qty) || product_qty < 0) ? 0 : product_qty;
 
-                let purchase_price = parseFloat($('.purchase_price:eq('+i+')').val());
-                purchase_price = (isNaN(purchase_price) || purchase_price < 0) ? 0 : purchase_price;
+                let purchase_unit_price = parseFloat($('.purchase_unit_price:eq('+i+')').val());
+                purchase_unit_price = (isNaN(purchase_unit_price) || purchase_unit_price < 0) ? 0 : purchase_unit_price;
 
-                let product_unit_price = parseFloat($('.product_unit_price:eq('+i+')').val());
-                product_unit_price = (isNaN(product_unit_price) || product_unit_price < 0) ? 0 : product_unit_price;
+                let selling_unit_price = parseFloat($('.selling_unit_price:eq('+i+')').val());
+                selling_unit_price = (isNaN(selling_unit_price) || selling_unit_price < 0) ? 0 : selling_unit_price;
 
-                $('.total-purchase-cost:eq('+i+')').text((product_qty * product_unit_price).toFixed(2) );
+                $('.total-purchase-cost:eq('+i+')').text((product_qty * selling_unit_price).toFixed(2) );
                 total_damage_return_quantity += damage_return_product_qty;
                 total_quantity += product_qty;
-                total_purchase_price += product_qty * purchase_price;
-                total_selling_price += product_qty * product_unit_price;
+                total_purchase_price += product_qty * purchase_unit_price;
+                total_selling_price += product_qty * selling_unit_price;
             });
 
             $('#total_damage_return_quantity').text(total_damage_return_quantity);

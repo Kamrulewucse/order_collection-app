@@ -20,9 +20,9 @@ class DistributionOrder extends Model
         return $this->hasMany(SaleOrder::class);
     }
 
-    public function dsr()
+    public function sr()
     {
-        return $this->belongsTo(Client::class,'dsr_id','id');
+        return $this->belongsTo(Client::class,'sr_id','id');
     }
     public function company()
     {

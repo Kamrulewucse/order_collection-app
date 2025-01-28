@@ -156,7 +156,7 @@
                     {data: 'order_no', name: 'order_no'},
                     {data: 'date', name: 'date'},
                     {data: 'company_name', name: 'company.name'},
-                    {data: 'dsr_name', name: 'dsr.name'},
+                    {data: 'sr_name', name: 'sr.name'},
                     {
                         data: 'total',
                         name: 'total',
