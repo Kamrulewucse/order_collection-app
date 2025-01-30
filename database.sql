@@ -172,7 +172,7 @@ CREATE TABLE `distribution_orders` (
   `notes` text DEFAULT NULL,
   `date` date NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `close_status` tinyint(1) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL

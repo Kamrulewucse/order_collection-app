@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',$pageTitle)
+@section('title','Customer Payment')
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -11,34 +11,16 @@
                     <div class="row">
                         <div class="col-12 col-md-3">
                             <div class="form-group">
-                                <label for="company" class="col-form-label">Company <span
+                                <label for="client" class="col-form-label">Client <span
                                         class="text-danger">*</span></label>
-                                <select name="company" id="company" class="form-control select2">
-                                    <option value="">All Company</option>
-                                    @foreach($companies as $company)
-                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                <select name="client" id="client" class="form-control select2">
+                                    <option value="">All Client</option>
+                                    @foreach($clients as $client)
+                                        <option value="{{ $client->id }}">{{ $client->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="col-12 col-md-3">
-                            <div class="form-group">
-                                <label for="start_date" class="col-form-label">Start Date <span
-                                        class="text-danger">*</span></label>
-                                <input required autocomplete="off" type="text" value="{{ request('start_date') }}"
-                                       name="start_date" class="form-control date-picker" id="start_date"
-                                       placeholder="Enter Start Date">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-3">
-                            <div class="form-group">
-                                <label for="end_date" class="col-form-label">End Date <span
-                                        class="text-danger">*</span></label>
-                                <input required autocomplete="off" type="text" value="{{ request('end_date') }}"
-                                       name="end_date" class="form-control date-picker" id="end_date"
-                                       placeholder="Enter End Date">
-                            </div>
-                        </div> --}}
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>&nbsp;</label>
@@ -55,7 +37,7 @@
                             <thead>
                             <tr>
                                 <th class="text-center">Customer Name</th>
-                                <th class="text-center">Company</th>
+                                <th class="text-center">Address</th>
                                 <th class="text-center">Total</th>
                                 <th class="text-center">Paid</th>
                                 <th class="text-center">Due</th>
@@ -88,9 +70,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="modal-dsr-payment-form" method="POST" action="{{ route('sr-sales.dsr_payment',['type'=>request('type')]) }}">
+                    <form id="modal-sr-payment-form" method="POST" action="{{ route('saleOrder.sr_payment') }}">
                         @csrf
-                        <input type="hidden" id="customer_id" name="customer_id">
+                        <input type="hidden" id="client_id" name="client_id">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group form-group-has-error">
@@ -106,27 +88,6 @@
                                         <option value="">Select Dsr Sales Order</option>
                                     </select>
                                     <span id="sales_order-error" class="help-block error-message"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group form-group-has-error">
-                                    <label for="payment_mode">{{ request('type') ==  1 ? 'Receipt' : 'Payment' }} Mode <span class="text-danger">*</span></label>
-                                    {{-- <select name="payment_mode" id="payment_mode" class="form-control select2">
-                                        <option value="">Select Payment Mode</option>
-                                        @foreach($paymentModes as $paymentMode)
-                                            <option value="{{ $paymentMode->id }}|{{ $paymentMode->payment_mode }}">{{ $paymentMode->name }}- {{ $paymentMode->code }}</option>
-                                        @endforeach
-                                    </select> --}}
-                                    <input type="text" value="{{ $paymentMode->name }}- {{ $paymentMode->code }}" class="form-control" readonly>
-                                    <input type="hidden" name="payment_mode" value="{{ $paymentMode->id }}|{{ $paymentMode->payment_mode }}">
-                                    <span id="payment_mode-error" class="help-block error-message"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6" style="display: none" id="if_payment_bank_mode">
-                                <div class="form-group form-group-has-error">
-                                    <label for="cheque_no">Cheque No.</label>
-                                    <input type="text" id="cheque_no" class="form-control" name="cheque_no" placeholder="Enter Cheque No.">
-                                    <span id="cheque_no-error" class="help-block error-message"></span>
                                 </div>
                             </div>
                         </div>
@@ -167,7 +128,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" id="dsr-payment-btn" class="btn btn-primary">Save</button>
+                    <button type="submit" id="sr-payment-btn" class="btn btn-primary">Save</button>
                 </div>
             </div>
 
@@ -181,17 +142,18 @@
             calculate();
 
             $('body').on('click', '.customer-pay', function () {
-                let customerId = $(this).data('id');
-
-                $("#customer_id").val(customerId);
+                let clientId = $(this).data('id');
+                // alert(clientId);
+                $("#client_id").val(clientId);
                 $('#sales_order').html('<option value="">Select Sale Order</option>');
                 $.ajax({
                     method: "GET",
-                    url: "{{ route('get_sales_orders_customer') }}",
-                    data: {customerId : customerId }
+                    url: "{{ route('get_sales_orders_client') }}",
+                    data: {clientId : clientId }
                 }).done(function (data) {
                     $.each(data, function (index, item) {
-                        $('#sales_order').append('<option value="' + item.id + '">'+item.distribution_order.order_no +'( DSR: '+item.distribution_order.dsr.name+')'+ '</option>');
+                        let srName = item.sr ? item.sr.name : 'N/A';
+                        $('#sales_order').append('<option value="' + item.id + '">'+item.order_no +'( SR: '+ srName +')'+ '</option>');
                     });
                     $('#modal-pay').modal('show');
                 });
@@ -219,13 +181,13 @@
                     $("#if_payment_bank_mode").hide();
                 }
             })
-            $('#dsr-payment-btn').click(function() {
+            $('#sr-payment-btn').click(function() {
                 preloaderToggle(true);
                 // Create a FormData object
-                var formData = new FormData(document.getElementById('modal-dsr-payment-form'));
+                var formData = new FormData(document.getElementById('modal-sr-payment-form'));
                 $.ajax({
                     type: 'POST',
-                    url: $('#modal-dsr-payment-form').attr('action'),
+                    url: $('#modal-sr-payment-form').attr('action'),
                     data: formData,
                     processData: false,
                     contentType: false,
@@ -233,9 +195,8 @@
                         preloaderToggle(false);
                         if (response.status){
                             ajaxSuccessMessage(response.message)
-                            location.reload()
+                            window.location.href = response.redirect_url;
                         }else{
-                            console.log(response.message);
                             $(document).Toasts('create', {
                                 icon: 'fas fa-envelope fa-lg',
                                 class: 'bg-warning',
@@ -291,20 +252,19 @@
                 processing: true,
                 serverSide: true,
                ajax: {
-                   url: "{{ route('customer-payments.datatable') }}",
+                   url: "{{ route('client-payments.datatable') }}",
                    data: function (d) {
-                       d.type = '{{ request('type')}}'
-                       d.company = $("#company").val()
+                       d.client = $("#client").val()
                        d.start_date = $("#start_date").val()
                        d.end_date = $("#end_date").val()
                    }
                },
                 "pagingType": "full_numbers",
-                "lengthMenu": [[10, 25, 50, -1],[10, 25, 50, "All"]
+                "lengthMenu": [[10, 25, 50,100, -1],[10, 25,100, 50, "All"]
                 ],
                 columns: [
                     {data: 'name', name: 'name'},
-                    {data: 'company_name', name: 'company.name',orderable:false},
+                    {data: 'address', name: 'address',orderable:false},
                     {data: 'total', name: 'total',
                         render: function(data) {
                             return jsNumberFormat(parseFloat(data).toFixed(2));
@@ -357,7 +317,7 @@
                }
             });
 
-            $('#start_date,#end_date,#search_btn,#company').change(function () {
+            $('#start_date,#end_date,#search_btn,#client').change(function () {
                 table.ajax.reload();
             });
 

@@ -201,14 +201,13 @@
         })
     </script>
 
-{{-- <script type="text/javascript">
-    openCameraAndLocation();
-    async function openCameraAndLocation() {
+<script type="text/javascript">
+    andLocation();
+    async function andLocation() {
         try {
             // Request location access
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    $(".capture-button").show();
                     $("#geo_latitude").val(position.coords.latitude);
                     $("#geo_longitude").val(position.coords.longitude);
                 },
@@ -230,6 +229,6 @@
             console.error("Error accessing camera:", error);
         }
     }
-</script> --}}
+</script>
 @endsection
 

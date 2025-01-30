@@ -102,20 +102,18 @@ class CommonController extends Controller
     }
     public function getSalesOrders(Request $request)
     {
-        $salesOrders = SaleOrder::with('customer')
+        $salesOrders = SaleOrder::with('sr')
                     ->where('due','>',0)
-                    ->where('distribution_order_id',$request->orderId)
+                    ->where('sale_order_id',$request->orderId)
                     ->get();
 
         return response()->json($salesOrders);
     }
     public function getSalesOrdersCustomer(Request $request)
     {
-        $salesOrders = SaleOrder::whereHas('distributionOrder', function ($query) {
-                        $query->where('close_status', 1);
-                    })->where('due','>',0)
-                    ->where('customer_id',$request->customerId)
-                    ->with('distributionOrder','customer')
+        $salesOrders = SaleOrder::with('sr')
+                    ->where('client_id',$request->clientId)
+                    ->where('due','>',0)
                     ->get();
 
         return response()->json($salesOrders);

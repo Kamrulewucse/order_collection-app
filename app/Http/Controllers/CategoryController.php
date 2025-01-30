@@ -17,7 +17,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return view('inventory_system.category.index');
+        return view('settings.category.index');
     }
     public function dataTable()
     {
@@ -47,7 +47,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('inventory_system.category.create');
+        return view('settings.category.create');
     }
 
     /**
@@ -93,7 +93,7 @@ class CategoryController extends Controller
     {
         try {
             // If the Product exists, display the edit view
-            return view('inventory_system.category.edit', compact('category'));
+            return view('settings.category.edit', compact('category'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Product is not found
             return redirect()->route('category.index')->with('error', 'Category not found: '.$e->getMessage());

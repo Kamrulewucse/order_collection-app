@@ -2,7 +2,7 @@
 @section('title',$pageTitle)
 
 @section('content')
-    <form action="{{ route('sr-sales.customer_sale_entry',['distributionOrder'=>$distributionOrder->id,'type'=>request('type')]) }}" method="post">
+    <form action="{{ route('sales-order.customer_sale_entry',['distributionOrder'=>$distributionOrder->id,'type'=>request('type')]) }}" method="post">
         @csrf
         <div class="row">
         <div class="col-12">

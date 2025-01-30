@@ -59,11 +59,11 @@
                 <span class="info-box-icon bg-gradient-yellow elevation-1"><i class="text-white fa fa-bangladeshi-taka-sign"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">TOTAL COLLECTION</span>
-                    <span class="info-box-number" id="total_collection">{{ number_format($totalCollection,2) }}</span>
+                    <span class="info-box-number" id="total_collection">0.00</span>
                 </div>
             </div>
         </div>
-        @foreach($paymentModes as $paymentMode)
+        {{-- @foreach($paymentModes as $paymentMode)
             @php
                 $collectionAmount = \App\Models\Voucher::
                     where('voucher_type',\App\Enumeration\VoucherType::$COLLECTION_VOUCHER)
@@ -99,14 +99,14 @@
                     </div>
                 </div>
             </div>
-        @endforeach
+        @endforeach --}}
 
         <div class="col-12 col-md-3">
             <div class="info-box">
                 <span class="info-box-icon  bg-gradient-success elevation-1"><i class="fa fa-handshake"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">SETTLED</span>
-                    <span class="info-box-number" id="total_settled">{{ number_format($totalSettled,2) }}</span>
+                    <span class="info-box-number" id="total_settled">0.00</span>
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
                 <span class="info-box-icon bg-gradient-indigo elevation-1"><i class="fa fa-bank"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">BANK DEPOSIT</span>
-                    <span class="info-box-number" id="total_bank_deposit">{{ number_format($totalBankDeposit,2) }}</span>
+                    <span class="info-box-number" id="total_bank_deposit">0.00</span>
                 </div>
             </div>
         </div>

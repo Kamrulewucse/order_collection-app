@@ -20,19 +20,7 @@ class Client extends Model
     {
         return $this->hasMany(Transaction::class, 'company_id', 'id');
     }
-    public function purchaseOrders()
-    {
-        return $this->hasMany(PurchaseOrder::class, 'supplier_id', 'id');
-    }
 
-    public function vouchers()
-    {
-        return $this->hasMany(Voucher::class, 'company_id', 'id');
-    }
-    public function accountHead()
-    {
-        return $this->belongsTo(AccountHead::class, 'supplier_id', 'id');
-    }
     public function sr()
     {
         return $this->belongsTo(Client::class, 'sr_id', 'id');
@@ -57,18 +45,11 @@ class Client extends Model
     {
         return $this->hasMany(Product::class, 'supplier_id', 'id');
     }
-    public function inventories()
-    {
-        return $this->hasMany(Inventory::class, 'company_id', 'id');
-    }
-    public function distributionOrders()
-    {
-        return $this->hasMany(DistributionOrder::class, 'company_id', 'id');
-    }
 
     public function saleOrders()
     {
-        return $this->hasMany(SaleOrder::class, 'customer_id', 'id')
-            ->with('distributionOrder');
+        return $this->hasMany(SaleOrder::class, 'client_id', 'id')
+            ->with('saleOrderItems');
     }
+    
 }

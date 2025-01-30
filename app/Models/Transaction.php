@@ -11,20 +11,5 @@ class Transaction extends Model
     use HasFactory,SoftDeletes;
     protected $guarded = [];
 
-    public function paymentAccountHead()
-    {
-        return $this->belongsTo(AccountHead::class,'payment_account_head_id');
-    }
-    public function payeeDepositorHead()
-    {
-        return $this->belongsTo(AccountHead::class,'account_head_payee_depositor_id');
-    }
-    public function accountHead()
-    {
-        return $this->belongsTo(AccountHead::class);
-    }
-    public function voucher()
-    {
-        return $this->belongsTo(Voucher::class);
-    }
+
 }

@@ -25,7 +25,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('inventory_system.product.index');
+        return view('settings.product.index');
     }
     public function dataTable()
     {
@@ -71,7 +71,7 @@ class ProductController extends Controller
         }
         $units = Unit::where('status',1)->get();
         $categories = Category::where('status',1)->get();
-        return view('inventory_system.product.create',compact('units',
+        return view('settings.product.create',compact('units',
             'categories'));
     }
 
@@ -135,7 +135,7 @@ class ProductController extends Controller
             $units = Unit::where('status',1)->get();
             $categories = Category::where('status',1)->get();
             // If the Product exists, display the edit view
-            return view('inventory_system.product.edit', compact('product',
+            return view('settings.product.edit', compact('product',
                 'units','categories'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Product is not found
