@@ -46,12 +46,12 @@
                             </div>
                             <div class="col-12 col-md-3">
                                 <div class="form-group">
-                                    <label for="customer" class="col-form-label">Customer <span
+                                    <label for="client" class="col-form-label">Client <span
                                             class="text-danger">*</span></label>
-                                    <select name="customer" id="customer" class="form-control select2">
-                                        <option value="">All Customer</option>
-                                        @foreach($customers as $customer)
-                                        <option {{ request('customer') == $customer->id ? 'selected' : '' }} value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                    <select name="client" id="client" class="form-control select2">
+                                        <option value="">All Client</option>
+                                        @foreach($clients as $client)
+                                        <option {{ request('client') == $client->id ? 'selected' : '' }} value="{{ $client->id }}">{{ $client->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -103,12 +103,12 @@
                             <tr>
                                 <th class="text-center">S/L</th>
                                 <th class="text-center">Date</th>
-                                <th class="text-center">Customer</th>
-                                <th class="text-center">Company</th>
+                                <th class="text-center">Client</th>
+                                <th class="text-center">SR</th>
                                 <th class="text-center">Total Sales</th>
                                 <th class="text-center">Total Paid</th>
                                 <th class="text-center">Total Due</th>
-                                <th class="text-center">Due Collection</th>
+                                <th class="text-center">Order No</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -116,27 +116,27 @@
                                 $totalDueCollection = 0;
                             @endphp
                                 @foreach($logs as $log)
-                                    @php
+                                    {{-- @php
                                         $dueCollection = $log->vouchers->where('due_payment',1)->sum('amount');
                                         $totalDueCollection += $dueCollection;
-                                    @endphp
+                                    @endphp --}}
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ \Carbon\Carbon::parse($log->date)->format('d-m-Y') }}</td>
-                                        <td>{{ $log->customer->name ?? '' }}</td>
-                                        <td>{{ $log->customer->company->name ?? '' }}</td>
+                                        <td>{{ $log->client->name ?? '' }}</td>
+                                        <td>{{ $log->sr->name ?? '' }}</td>
                                         <td class="text-right">{{ number_format($log->total,2) }}</td>
-                                        <td class="text-right">{{ number_format($log->paid - $dueCollection,2) }}</td>
+                                        <td class="text-right">{{ number_format($log->paid,2) }}</td>
                                         <td class="text-right">{{ number_format($log->due,2) }}</td>
-                                        <td class="text-right">{{ number_format($dueCollection,2) }}</td>
+                                        <td class="text-right"><a href="{{route('sales-order.day_close', ['saleOrder' => $log->id, 'type' => 1])}}" target="_blank">{{ $log->order_no }}</a></td>
                                     </tr>
                                 @endforeach
                             <tr>
                                 <th class="text-center" colspan="4">Total</th>
                                 <th class="text-right">{{ number_format($logs->sum('total'),2) }}</th>
-                                <th class="text-right">{{ number_format($logs->sum('paid') - $totalDueCollection,2) }}</th>
+                                <th class="text-right">{{ number_format($logs->sum('paid')) }}</th>
                                 <th class="text-right">{{ number_format($logs->sum('due'),2) }}</th>
-                                <th class="text-right">{{ number_format($totalDueCollection,2) }}</th>
+                                <th class="text-right"></th>
                             </tr>
                             </tbody>
                         </table>

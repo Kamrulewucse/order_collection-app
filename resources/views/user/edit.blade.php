@@ -33,11 +33,9 @@
                     @method('PUT')
                     <div class="card-body">
                         <div class="form-group row {{ $errors->has('name') ? 'has-error' :'' }}">
-                            <label for="name" class="col-sm-2 col-form-label">Name <span
-                                    class="text-danger">*</span></label>
+                            <label for="name" class="col-sm-2 col-form-label">Name <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" value="{{ old('name',$user->name) }}" name="name"
-                                       class="form-control" id="name" placeholder="Enter Name">
+                                <input type="text" {{in_array($user->role, ['Admin', 'SuperAdmin']) ? '' : 'readonly'}} value="{{ old('name',$user->name) }}" name="name" class="form-control" id="name" placeholder="Enter Name">
                                 @error('name')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
@@ -47,13 +45,14 @@
                             <label for="username" class="col-sm-2 col-form-label">Username <span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" value="{{ old('username',$user->username) }}" name="username"
+                                <input type="text" {{in_array($user->role, ['Admin', 'SuperAdmin']) ? '' : 'readonly'}}  value="{{ old('username',$user->username) }}" name="username"
                                        class="form-control" id="username" placeholder="Enter Username">
                                 @error('username')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
+                        @if(in_array($user->role, ['Admin', 'SuperAdmin']))
                         <div class="form-group row {{ $errors->has('role') ? 'has-error' :'' }}">
                             <label for="role" class="col-sm-2 col-form-label">Role <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
@@ -66,10 +65,11 @@
                                 @enderror
                             </div>
                         </div>
+                        @endif
                         <div class="form-group row {{ $errors->has('email') ? 'has-error' :'' }}">
                             <label for="email" class="col-sm-2 col-form-label">Email</label>
                             <div class="col-sm-10">
-                                <input type="email" value="{{ old('email',$user->email) }}" name="email"
+                                <input type="email" {{in_array($user->role, ['Admin', 'SuperAdmin']) ? '' : 'readonly'}}  value="{{ old('email',$user->email) }}" name="email"
                                        class="form-control" id="email" placeholder="Enter Email">
                                 @error('email')
                                 <span class="help-block">{{ $message }}</span>
@@ -79,7 +79,7 @@
                         <div class="form-group row {{ $errors->has('mobile_no') ? 'has-error' :'' }}">
                             <label for="mobile_no" class="col-sm-2 col-form-label">Mobile No.</label>
                             <div class="col-sm-10">
-                                <input type="text" value="{{ old('mobile_no',$user->mobile_no) }}" name="mobile_no"
+                                <input type="text" {{in_array($user->role, ['Admin', 'SuperAdmin']) ? '' : 'readonly'}}  value="{{ old('mobile_no',$user->mobile_no) }}" name="mobile_no"
                                        class="form-control" id="mobile_no" placeholder="Enter Mobile No.">
                                 @error('mobile_no')
                                 <span class="help-block">{{ $message }}</span>

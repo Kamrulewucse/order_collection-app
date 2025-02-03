@@ -26,14 +26,9 @@ class UnitController extends Controller
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Unit $unit) {
-
                 $btn = '';
-                if (auth()->user()->hasPermissionTo('product_unit_edit')) {
-                    $btn .= '<a href="' . route('unit.edit', ['unit' => $unit->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
-                }
-                if (auth()->user()->hasPermissionTo('product_unit_delete')) {
-                        $btn .= ' <a role="button" data-id="' . $unit->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
-                    }
+                $btn .= '<a href="' . route('unit.edit', ['unit' => $unit->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                $btn .= ' <a role="button" data-id="' . $unit->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 return $btn;
 
             })
@@ -48,9 +43,6 @@ class UnitController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->hasPermissionTo('product_unit_create')) {
-            abort(403, 'Unauthorized');
-        }
         return view('inventory_system.unit.create');
     }
 
@@ -59,9 +51,6 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermissionTo('product_unit_create')) {
-            abort(403, 'Unauthorized');
-        }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -98,9 +87,6 @@ class UnitController extends Controller
      */
     public function edit(Unit $unit)
     {
-        if (!auth()->user()->hasPermissionTo('product_unit_edit')) {
-            abort(403, 'Unauthorized');
-        }
         try {
             // If the Product exists, display the edit view
             return view('inventory_system.unit.edit', compact('unit'));
@@ -115,9 +101,6 @@ class UnitController extends Controller
      */
     public function update(Request $request, Unit $unit)
     {
-        if (!auth()->user()->hasPermissionTo('product_unit_edit')) {
-            abort(403, 'Unauthorized');
-        }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -156,9 +139,6 @@ class UnitController extends Controller
     public function destroy(Unit $unit)
     {
         try {
-            if (!auth()->user()->hasPermissionTo('product_unit_delete')) {
-                abort(403, 'Unauthorized');
-            }
             $product = Product::where('unit_id',$unit->id)->first();
             if ($product) {
                 // If a related Supplier exists, return an error message

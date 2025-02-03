@@ -34,12 +34,8 @@ class ProductController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function(Product $product) {
                 $btn = '';
-                if (auth()->user()->hasPermissionTo('product_edit')) {
-                    $btn .= '<a href="' . route('product.edit', ['product' => $product->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
-                }
-                if (auth()->user()->hasPermissionTo('product_delete')) {
-                    $btn .= ' <a role="button" data-id="' . $product->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
-                }
+                $btn .= '<a href="' . route('product.edit', ['product' => $product->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                $btn .= ' <a role="button" data-id="' . $product->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 return $btn;
 
             })
@@ -66,9 +62,6 @@ class ProductController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->hasPermissionTo('product_create')) {
-            abort(403, 'Unauthorized');
-        }
         $units = Unit::where('status',1)->get();
         $categories = Category::where('status',1)->get();
         return view('settings.product.create',compact('units',
@@ -80,9 +73,6 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermissionTo('product_create')) {
-            abort(403, 'Unauthorized');
-        }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -128,9 +118,6 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        if (!auth()->user()->hasPermissionTo('product_edit')) {
-            abort(403, 'Unauthorized');
-        }
         try {
             $units = Unit::where('status',1)->get();
             $categories = Category::where('status',1)->get();
@@ -148,9 +135,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        if (!auth()->user()->hasPermissionTo('product_edit')) {
-            abort(403, 'Unauthorized');
-        }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -198,9 +182,6 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         try {
-            if (!auth()->user()->hasPermissionTo('product_delete')) {
-                abort(403, 'Unauthorized');
-            }
             $inventory = Inventory::where('product_id',$product->id)->first();
             if ($inventory) {
                 // If a related Supplier exists, return an error message

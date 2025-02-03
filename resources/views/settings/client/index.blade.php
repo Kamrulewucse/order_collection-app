@@ -5,9 +5,7 @@
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    @if(auth()->user()->can('customer_create'))
                     <a href="{{ route('client.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Create Client <i class="fa fa-plus"></i></a>
-                    @endif
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">

@@ -26,7 +26,7 @@
                     {{-- getting customer latitude and longitude --}}
                     <input type="hidden" id="latitude" name="latitude">
                     <input type="hidden" id="longitude" name="longitude">
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group {{ $errors->has('client') ? 'has-error' :'' }}">
@@ -186,6 +186,7 @@
                 <!-- /.card-header -->
                 <div class="card-body">
                     <div class="row">
+                        @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
                         <div class="col-md-12">
                             <div class="form-group {{ $errors->has('sr') ? 'has-error' :'' }}">
                                 <label for="sr">SR <span
@@ -201,7 +202,21 @@
                                 @enderror
                             </div>
                         </div>
+                        @else
                         <div class="col-md-12">
+                            <div class="form-group {{ $errors->has('sr') ? 'has-error' :'' }}">
+                                <label for="sr">SR <span class="text-danger">*</span></label>
+                                <input type="text" readonly value="{{ old('sr',$srs->name) }}" name="sr_name" class="form-control" id="sr_name" placeholder="Enter Name">
+                                <input type="hidden" readonly value="{{ old('sr',$srs->id) }}" name="sr" class="form-control" id="sr" placeholder="Enter Name">
+                                @error('sr')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                                @error('sr')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        @endif                        <div class="col-md-12">
                             <div class="form-group {{ $errors->has('date') ? 'has-error' :'' }}">
                                 <label for="date">Date <span
                                         class="text-danger">*</span></label>

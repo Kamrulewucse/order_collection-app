@@ -22,17 +22,18 @@ class ClientController extends Controller
     }
     public function dataTable()
     {
-        $query = Client::where('type',4)->with('sr','district','thana');//Client
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+            $query = Client::with('sr','district','thana')->where('type',4);//Client
+        }else{
+            $query = Client::with('sr','district','thana')->where('type',4)->where('sr_id',auth()->user()->client_id);//Client
+        }
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Client $client) {
                 $btn = '';
-                if(auth()->user()->can('customer_edit')){
-                    $btn  .='<a href="'.route('client.edit',['client'=>$client->id]).'" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
-                }
-                if(auth()->user()->can('customer_delete')) {
-                    $btn .= ' <a role="button" data-id="' . $client->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
-                }
+                $btn  .='<a href="'.route('client.edit',['client'=>$client->id]).'" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                $btn .= ' <a role="button" data-id="' . $client->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
+
                 return $btn;
             })
             ->addColumn('sr_name', function(Client $client) {
@@ -54,10 +55,13 @@ class ClientController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->hasPermissionTo('customer_create')) {
-            abort(403, 'Unauthorized');
+        $srs = [];
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+            $srs = Client::where('type',2)->where('status',1)->get(); //type 2  for SR
+        }else{
+            $srs = Client::where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
         }
-        $srs = Client::where('type',2)->get();
+        // dd($srs->id);
         $districts = District::where('status',1)->get();
         return view('settings.client.create',compact('srs','districts'));
     }
@@ -67,10 +71,6 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermissionTo('customer_create')) {
-            abort(403, 'Unauthorized');
-        }
-
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -110,20 +110,10 @@ class ClientController extends Controller
             unset($validatedData['sr']);
             unset($validatedData['district']);
             unset($validatedData['thana']);
+
             $client = Client::create($validatedData);
-            // Create/Update User
-            $user = User::where('role','Client')->where('client_id',$client->id)->first();
-            if (!$user){
-                $user = new User();
-            }
-            $user->role = 'Client';
-            $user->client_id = $client->id;
-            $user->name = $request->name;
-            $user->username  = $request->mobile_no;
-            $user->email = $request->email;
-            $user->mobile_no = $request->mobile_no;
-            $user->password = bcrypt($request->password);
-            $user->save();
+
+
 
             // Commit the transaction
             DB::commit();
@@ -145,15 +135,17 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        if (!auth()->user()->hasPermissionTo('customer_edit')) {
-            abort(403, 'Unauthorized');
-        }
         if ($client->type != 4) {
             abort(404);
         }
         try {
             // If the Client exists, display the edit view
-            $srs = Client::where('type',2)->get();
+            $srs = [];
+            if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+                $srs = Client::where('type',2)->where('status',1)->get(); // 2 for SR
+            }else{
+                $srs = Client::where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
+            }
             $districts = District::where('status',1)->get();
             return view('settings.client.edit', compact('client','srs','districts'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -167,9 +159,6 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
-        if (!auth()->user()->hasPermissionTo('customer_edit')) {
-            abort(403, 'Unauthorized');
-        }
         if ($client->type != 4) {
             abort(404);
         }
@@ -207,7 +196,7 @@ class ClientController extends Controller
             //Get addresss from latitude and longitude
             $location_address = getLocationName($request->latitude, $request->longitude);
             // Update the Client record in the database
-            $validatedData['type'] = 3;
+            $validatedData['type'] = 4;
             $validatedData['sr_id'] = $validatedData['sr'];
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
@@ -215,20 +204,9 @@ class ClientController extends Controller
             unset($validatedData['sr']);
             unset($validatedData['district']);
             unset($validatedData['thana']);
+
             $client->update($validatedData);
 
-            $user = User::where('role','Client')->where('client_id',$client->id)->first();
-            if (!$user){
-                $user = new User();
-            }
-            $user->role = 'Client';
-            $user->client_id = $client->id;
-            $user->name = $request->name;
-            $user->username  = $request->mobile_no;
-            $user->email = $request->email;
-            $user->mobile_no = $request->mobile_no;
-            $user->password = bcrypt($request->password);
-            $user->save();
 
             // Commit the transaction
             DB::commit();
@@ -253,14 +231,6 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         try {
-            if (!auth()->user()->hasPermissionTo('customer_delete')) {
-                abort(403, 'Unauthorized');
-            }
-//            $distributionOrder = DistributionOrder::where('dsr_id',$client->id)->first();
-//            if ($distributionOrder) {
-//                // If a related Client exists, return an error message
-//                return response()->json(['success' => false, 'message' => 'It has distribution order order logs. Cannot delete.'], Response::HTTP_OK);
-//            }
             // Delete the Client record
             $client->delete();
             // Return a JSON success response

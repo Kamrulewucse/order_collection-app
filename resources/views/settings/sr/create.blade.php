@@ -33,7 +33,7 @@
                             </div>
                         </div>
                         <div class="form-group row {{ $errors->has('email') ? 'has-error' :'' }}">
-                            <label for="email" class="col-sm-2 col-form-label">Email</label>
+                            <label for="email" class="col-sm-2 col-form-label">Email  <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
                                 <input type="email" value="{{ old('email') }}" name="email" class="form-control" id="email" placeholder="Enter Email">
                                 @error('email')
@@ -41,11 +41,27 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('opening_balance') ? 'has-error' :'' }}">
-                            <label for="opening_balance" class="col-sm-2 col-form-label">Opening Balance <span class="text-danger">*</span></label>
+                        <div class="form-group row {{ $errors->has('district') ? 'has-error' :'' }}">
+                            <label for="district" class="col-sm-2 col-form-label">District <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" value="{{ old('opening_balance',0) }}" name="opening_balance" class="form-control" id="opening_balance" placeholder="Enter Opening Balance">
-                                @error('opening_balance')
+                                <select name="district" id="district" class="form-control select2">
+                                    <option value="">Select District</option>
+                                    @foreach($districts as $district)
+                                    <option {{ old('district') == $district->id ? 'selected' : '' }} value="{{ $district->id }}">{{ $district->name_eng }}</option>
+                                    @endforeach
+                                </select>
+                                @error('district')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group row {{ $errors->has('thana') ? 'has-error' :'' }}">
+                            <label for="thana" class="col-sm-2 col-form-label">Thana <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select name="thana" id="thana" class="form-control select2">
+                                    <option value="">Select Thana</option>
+                                </select>
+                                @error('thana')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -94,4 +110,52 @@
         <!--/.col (left) -->
     </div>
 @endsection
+@section('script')
+    <script>
+        $(function (){
+            $(document).ready(function () {
+                const oldThanaId = "{{ old('thana') }}";
+                const oldDistrictId = "{{ old('district') }}";
 
+                function loadSubcategories(districtId, selectedThanaId = null) {
+                    if (districtId) {
+                        $.ajax({
+                            url: "{{ route('get.thanas', ':districtId') }}".replace(':districtId', districtId),
+                            type: 'GET',
+                            success: function (data) {
+                                $('#thana').empty().append('<option value="">Select Thana</option>');
+
+                                if (data.length > 0) {
+                                    data.forEach(function (thana) {
+                                        $('#thana').append(
+                                            `<option value="${thana.id}" ${ selectedThanaId == thana.id ? 'selected' : '' }>${thana.name_eng}</option>`
+                                        );
+                                    });
+                                } else {
+                                    alert('No thanas available for the selected district.');
+                                }
+                            },
+                            error: function () {
+                                alert('Failed to load thanas.');
+                            }
+                        });
+                    } else {
+                        // If no district is selected, clear the thana field
+                        $('#thana').empty().append('<option value="">Select Thana</option>');
+                    }
+                }
+
+
+                if (oldDistrictId) {
+                    loadSubcategories(oldDistrictId, oldThanaId);
+                }
+
+                // Handle district change
+                $('#district').change(function () {
+                    const districtId = $(this).val();
+                    loadSubcategories(districtId);
+                });
+            });
+        })
+    </script>
+@endsection

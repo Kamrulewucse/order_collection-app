@@ -27,12 +27,8 @@ class CategoryController extends Controller
             ->addColumn('action', function(Category $category) {
 
                 $btn = '';
-                if (auth()->user()->hasPermissionTo('product_unit_edit')) {
-                    $btn .= '<a href="' . route('category.edit', ['category' => $category->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
-                }
-                if (auth()->user()->hasPermissionTo('product_unit_delete')) {
-                        $btn .= ' <a role="button" data-id="' . $category->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
-                    }
+                $btn .= '<a href="' . route('category.edit', ['category' => $category->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                $btn .= ' <a role="button" data-id="' . $category->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 return $btn;
 
             })

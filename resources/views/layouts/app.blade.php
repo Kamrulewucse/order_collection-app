@@ -25,24 +25,20 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    @if(Route::currentRouteName() == 'dashboard')
+                    @if(Route::currentRouteName() == 'dashboard_dashboard')
                         <div class="col-8 col-md-10">
                             <h1 class="m-0">@yield('title')</h1>
                         </div>
-
-                        @if (auth()->user()->can('dashboard'))
                         <div class="col-4 col-md-2">
-                            <form action="{{ route('dashboard') }}" id="dashboard_year_form" method="get">
-                                <div class="form-group mb-0">
-                                    <select name="dashboard_year" class="form-control select2" id="dashboard_year">
-                                        @for($i = 2023;$i <= date('Y');$i++)
-                                            <option {{ request('dashboard_year',date('Y')) == $i ? 'selected' : '' }} value="{{ $i }}">{{ $i }}</option>
-                                        @endfor
-                                    </select>
+                            <form action="{{ route('dashboard_dashboard') }}" id="dashboard_year_form" method="get">
+                                <div id="report-range" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                    <i class="fa fa-calendar"></i>&nbsp;
+                                    <span></span> <i class="fa fa-caret-down"></i>
                                 </div>
+                                <input type="hidden" name="start_date" id="start_date" value="">
+                                <input type="hidden" name="end_date" id="end_date" value="">
                             </form>
                         </div>
-                        @endif
                     @else
                         <div class="col-sm-12">
                             <h1 class="m-0">@yield('title')</h1>

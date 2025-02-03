@@ -15,6 +15,33 @@
                     @csrf
                     @method('PUT')
                     <div class="card-body">
+                        @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                        <div class="form-group row {{ $errors->has('sr') ? 'has-error' :'' }}">
+                            <label for="sr" class="col-sm-2 col-form-label">SR <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select name="sr" id="sr" class="form-control select2">
+                                    <option value="">Select SR</option>
+                                    @foreach($srs as $sr)
+                                        <option {{ old('sr',$client->sr_id) == $sr->id ? 'selected' : '' }} value="{{ $sr->id }}">{{ $sr->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('sr')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        @else
+                        <div class="form-group row {{ $errors->has('sr') ? 'has-error' :'' }}">
+                            <label for="sr" class="col-sm-2 col-form-label">SR Name<span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly value="{{ old('sr',$srs->name) }}" name="sr_name" class="form-control" id="sr_name" placeholder="Enter Name">
+                                <input type="hidden" readonly value="{{ old('sr',$srs->id) }}" name="sr" class="form-control" id="sr" placeholder="Enter Name">
+                                @error('sr')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        @endif
                         <div class="form-group row {{ $errors->has('name') ? 'has-error' :'' }}">
                             <label for="name" class="col-sm-2 col-form-label">Name <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
@@ -38,20 +65,6 @@
                             <div class="col-sm-10">
                                 <input type="text" value="{{ old('mobile_no',$client->mobile_no) }}" name="mobile_no" class="form-control" id="mobile_no" placeholder="Enter Mobile No.">
                                 @error('mobile_no')
-                                <span class="help-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="form-group row {{ $errors->has('sr') ? 'has-error' :'' }}">
-                            <label for="sr" class="col-sm-2 col-form-label">SR <span class="text-danger">*</span></label>
-                            <div class="col-sm-10">
-                                <select name="sr" id="sr" class="form-control select2">
-                                    <option value="">Select SR</option>
-                                    @foreach($srs as $sr)
-                                        <option {{ old('sr',$client->sr_id) == $sr->id ? 'selected' : '' }} value="{{ $sr->id }}">{{ $sr->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('sr')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>

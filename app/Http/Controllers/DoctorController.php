@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AccountHead;
-use App\Models\Channel;
-use App\Models\DistributionOrder;
-use App\Models\Network;
-use App\Models\PurchaseOrder;
 use App\Models\Client;
+use App\Models\District;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Yajra\DataTables\Facades\DataTables;
 
 class DoctorController extends Controller
@@ -32,13 +28,15 @@ class DoctorController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function(Client $client) {
                 $btn = '';
-                if(auth()->user()->can('dsr_edit')){
-                    $btn  .='<a href="'.route('doctor.edit',['doctor'=>$client->id]).'" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
-                }
-                if(auth()->user()->can('dsr_delete')) {
-                    $btn .= ' <a role="button" data-id="' . $client->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
-                }
+                $btn  .='<a href="'.route('doctor.edit',['doctor'=>$client->id]).'" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                $btn .= ' <a role="button" data-id="' . $client->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 return $btn;
+            })
+            ->addColumn('district_name', function(Client $client) {
+                return $client->district->name_eng ?? '';
+            })
+            ->addColumn('thana_name', function(Client $client) {
+                return $client->thana->name_eng ?? '';
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -50,10 +48,8 @@ class DoctorController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->hasPermissionTo('dsr_create')) {
-            abort(403, 'Unauthorized');
-        }
-        return view('settings.doctor.create');
+        $districts = District::where('status',1)->get();
+        return view('settings.doctor.create',compact('districts'));
     }
 
     /**
@@ -61,10 +57,6 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermissionTo('dsr_create')) {
-            abort(403, 'Unauthorized');
-        }
-
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -78,12 +70,14 @@ class DoctorController extends Controller
                     ->where('type',3)
             ],
             'email' =>[
-                'nullable','max:255',
+                'required','max:255',
                 Rule::unique('clients')
                     ->where('type',3)
             ],
+            'district' =>['required'],
+            'thana' =>['required'],
             'address' => 'nullable|string|max:255', // Make 'address' nullable
-            'opening_balance' => 'required|numeric|min:0',
+            'designation' => 'nullable', // Make 'designation' nullable
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -93,6 +87,14 @@ class DoctorController extends Controller
         try {
             // Create a new Client record in the database
             $validatedData['type'] = 3;
+            $validatedData['district_id'] = $validatedData['district'];
+            $validatedData['thana_id'] = $validatedData['thana'];
+            $validatedData['designation'] = $validatedData['designation'];
+
+            unset($validatedData['district']);
+            unset($validatedData['thana']);
+
+
             $doctor = Client::create($validatedData);
             // Create/Update User
             $user = User::where('role','Doctor')->where('client_id',$doctor->id)->first();
@@ -105,7 +107,7 @@ class DoctorController extends Controller
             $user->username  = $request->mobile_no;
             $user->email = $request->email;
             $user->mobile_no = $request->mobile_no;
-            $user->password = bcrypt($request->password);
+            $user->password = bcrypt('12345678');
             $user->save();
 
             // Commit the transaction
@@ -129,15 +131,13 @@ class DoctorController extends Controller
      */
     public function edit(Client $doctor)
     {
-        if (!auth()->user()->hasPermissionTo('dsr_edit')) {
-            abort(403, 'Unauthorized');
-        }
         if ($doctor->type != 3) {
             abort(404);
         }
+        $districts = District::where('status',1)->get();
         try {
             // If the Client exists, display the edit view
-            return view('settings.doctor.edit', compact('doctor'));
+            return view('settings.doctor.edit', compact('doctor','districts'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Client is not found
             return redirect()->route('doctor.index')->with('error', 'Doctor not found: '.$e->getMessage());
@@ -149,9 +149,6 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Client $doctor)
     {
-        if (!auth()->user()->hasPermissionTo('dsr_edit')) {
-            abort(403, 'Unauthorized');
-        }
         if ($doctor->type != 3) {
             abort(404);
         }
@@ -170,13 +167,15 @@ class DoctorController extends Controller
                     ->ignore($doctor)
             ],
             'email' =>[
-                'nullable','max:255',
+                'required','max:255',
                 Rule::unique('clients')
                     ->where('type',3)
                     ->ignore($doctor)
             ],
+            'district' =>['required'],
+            'thana' =>['required'],
+            'designation' => 'nullable', // Make 'designation' nullable
             'address' => 'nullable|string|max:255', // Make 'address' nullable
-            'opening_balance' => 'required|numeric|min:0',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -186,7 +185,15 @@ class DoctorController extends Controller
         try {
             // Update the Client record in the database
             $validatedData['type'] = 3;
+            $validatedData['district_id'] = $validatedData['district'];
+            $validatedData['thana_id'] = $validatedData['thana'];
+            $validatedData['designation'] = $validatedData['designation'];
+            
+            unset($validatedData['district']);
+            unset($validatedData['thana']);
+
             $doctor->update($validatedData);
+
 
             // Create/Update User
             $user = User::where('role','Doctor')->where('client_id',$doctor->id)->first();
@@ -199,7 +206,6 @@ class DoctorController extends Controller
             $user->username  = $request->mobile_no;
             $user->email = $request->email;
             $user->mobile_no = $request->mobile_no;
-            $user->password = bcrypt($request->password);
             $user->save();
 
             // Commit the transaction
@@ -225,6 +231,7 @@ class DoctorController extends Controller
     public function destroy(Client $doctor)
     {
         try {
+            User::where('client_id',$doctor->id)->delete();
             $doctor->delete();
             // Return a JSON success response
             return response()->json(['success'=>true,'message' => 'Doctor deleted successfully'], Response::HTTP_OK);

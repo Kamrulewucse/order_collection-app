@@ -24,4 +24,8 @@ class SaleOrder extends Model
     {
         return $this->belongsTo(Client::class,'client_id','id');
     }
+    public function locationAddressInfo()
+    {
+        return $this->hasOne(LocationAddressInfo::class, 'sale_order_id', 'id');
+    }
 }

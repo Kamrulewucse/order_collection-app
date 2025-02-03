@@ -5,9 +5,7 @@
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    @if(auth()->user()->can('dsr_create'))
                     <a href="{{ route('doctor.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Create Doctor <i class="fa fa-plus"></i></a>
-                    @endif
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -17,10 +15,12 @@
                             <tr>
                                 <th>S/L</th>
                                 <th>Name</th>
+                                <th>Designation</th>
                                 <th>Mobile No.</th>
                                 <th>Email</th>
+                                <th>District</th>
+                                <th>Thana</th>
                                 <th>Address</th>
-                                <th>Opening Balance</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -47,18 +47,12 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
+                    {data: 'designation', name: 'designation'},
                     {data: 'mobile_no', name: 'mobile_no'},
                     {data: 'email', name: 'email'},
+                    {data: 'district_name', name: 'district.name_eng'},
+                    {data: 'thana_name', name: 'thana.name_eng'},
                     {data: 'address', name: 'address'},
-                    {
-                        data: 'opening_balance',
-                        name: 'opening_balance',
-                        render: function (data, type, row) {
-                            // Format the opening_balance as a number with commas and 2 decimal places
-                            return parseFloat(data).toLocaleString(undefined, {minimumFractionDigits: 2});
-
-                        }
-                    },
                     {
                         data: 'status',
                         name: 'status',

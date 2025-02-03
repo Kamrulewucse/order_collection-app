@@ -5,9 +5,7 @@
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    @if (auth()->user()->can('product_unit_create'))
                     <a href="{{ route('unit.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Unit Product Create <i class="fa fa-plus"></i></a>
-                    @endif
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">

@@ -22,17 +22,17 @@ class FarmController extends Controller
     }
     public function dataTable()
     {
-        $query = Client::where('type',5)->with('doctor','district','thana');//Client
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+            $query = Client::with('doctor','district','thana')->where('type',5); //Farm
+        }else{
+            $query = Client::with('doctor','district','thana')->where('type',5)->where('doctor_id',auth()->user()->client_id); //type 5 for Farm
+        }
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Client $farm) {
                 $btn = '';
-                if(auth()->user()->can('customer_edit')){
-                    $btn  .='<a href="'.route('farm.edit',['farm'=>$farm->id]).'" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
-                }
-                if(auth()->user()->can('customer_delete')) {
-                    $btn .= ' <a role="button" data-id="' . $farm->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
-                }
+                $btn  .='<a href="'.route('farm.edit',['farm'=>$farm->id]).'" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                $btn .= ' <a role="button" data-id="' . $farm->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 return $btn;
             })
             ->addColumn('doctor_name', function(Client $farm) {
@@ -54,10 +54,12 @@ class FarmController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->hasPermissionTo('customer_create')) {
-            abort(403, 'Unauthorized');
+        $doctors = [];
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+            $doctors = Client::where('type',3)->where('status',1)->get(); //type 3 for Doctor
+        }else{
+            $doctors = Client::where('type',3)->where('id',auth()->user()->client_id)->first(); //type 3 for doctor
         }
-        $doctors = Client::where('type',3)->get();
         $districts = District::where('status',1)->get();
         return view('settings.farm.create',compact('doctors','districts'));
     }
@@ -67,10 +69,6 @@ class FarmController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermissionTo('customer_create')) {
-            abort(403, 'Unauthorized');
-        }
-
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -92,7 +90,6 @@ class FarmController extends Controller
             'latitude' => 'required|string|max:255',
             'longitude' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
-            'opening_balance' => 'required|numeric|min:0',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -122,7 +119,7 @@ class FarmController extends Controller
             $user->username  = $request->mobile_no;
             $user->email = $request->email;
             $user->mobile_no = $request->mobile_no;
-            $user->password = bcrypt($request->password);
+            $user->password = bcrypt('12345678');
             $user->save();
 
             // Commit the transaction
@@ -145,15 +142,18 @@ class FarmController extends Controller
      */
     public function edit(Client $farm)
     {
-        if (!auth()->user()->hasPermissionTo('customer_edit')) {
-            abort(403, 'Unauthorized');
-        }
         if ($farm->type != 5) {
             abort(404);
         }
+
         try {
-            // If the Client exists, display the edit view
-            $doctors = Client::where('type',3)->get();
+            $doctors = [];
+            if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+                $doctors = Client::where('type',3)->where('status',1)->get(); //type 3 for Doctor
+            }else{
+                $doctors = Client::where('type',3)->where('id',auth()->user()->client_id)->first(); //type 3 for doctor
+            }
+
             $districts = District::where('status',1)->get();
             return view('settings.farm.edit', compact('farm','doctors','districts'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -167,9 +167,6 @@ class FarmController extends Controller
      */
     public function update(Request $request, Client $farm)
     {
-        if (!auth()->user()->hasPermissionTo('customer_edit')) {
-            abort(403, 'Unauthorized');
-        }
         if ($farm->type != 5) {
             abort(404);
         }
@@ -196,7 +193,6 @@ class FarmController extends Controller
             'longitude' => 'nullable|string|max:255',
             'latitude' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255', // Make 'address' nullable
-            'opening_balance' => 'required|numeric|min:0',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -227,7 +223,6 @@ class FarmController extends Controller
             $user->username  = $request->mobile_no;
             $user->email = $request->email;
             $user->mobile_no = $request->mobile_no;
-            $user->password = bcrypt($request->password);
             $user->save();
 
             // Commit the transaction

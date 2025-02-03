@@ -14,6 +14,33 @@
                 <form enctype="multipart/form-data" action="{{ route('client.store') }}" class="form-horizontal" method="post">
                     @csrf
                     <div class="card-body">
+                        @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                        <div class="form-group row {{ $errors->has('sr') ? 'has-error' :'' }}">
+                            <label for="sr" class="col-sm-2 col-form-label">SR Name<span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select name="sr" id="sr" class="form-control select2">
+                                    <option value="">Select SR</option>
+                                    @foreach($srs as $sr)
+                                    <option {{ old('sr') == $sr->id ? 'selected' : '' }} value="{{ $sr->id }}">{{ $sr->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('sr')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        @else
+                        <div class="form-group row {{ $errors->has('sr') ? 'has-error' :'' }}">
+                            <label for="sr" class="col-sm-2 col-form-label">SR Name<span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly value="{{ old('sr',$srs->name) }}" name="sr_name" class="form-control" id="sr_name" placeholder="Enter Name">
+                                <input type="hidden" readonly value="{{ old('sr',$srs->id) }}" name="sr" class="form-control" id="sr" placeholder="Enter Name">
+                                @error('sr')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        @endif
                         <div class="form-group row {{ $errors->has('name') ? 'has-error' :'' }}">
                             <label for="name" class="col-sm-2 col-form-label">Name <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
@@ -41,20 +68,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('sr') ? 'has-error' :'' }}">
-                            <label for="sr" class="col-sm-2 col-form-label">SR <span class="text-danger">*</span></label>
-                            <div class="col-sm-10">
-                                <select name="sr" id="sr" class="form-control select2">
-                                    <option value="">Select SR</option>
-                                    @foreach($srs as $sr)
-                                    <option {{ old('sr') == $sr->id ? 'selected' : '' }} value="{{ $sr->id }}">{{ $sr->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('sr')
-                                <span class="help-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
+
                         <div class="form-group row {{ $errors->has('district') ? 'has-error' :'' }}">
                             <label for="district" class="col-sm-2 col-form-label">District <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
@@ -200,35 +214,5 @@
             });
         })
     </script>
-
-<script type="text/javascript">
-    andLocation();
-    async function andLocation() {
-        try {
-            // Request location access
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    $("#geo_latitude").val(position.coords.latitude);
-                    $("#geo_longitude").val(position.coords.longitude);
-                },
-                (error) => {
-                    if (error.code === error.PERMISSION_DENIED) {
-                        alert("Location access is required to proceed. Please enable location permissions.");
-                    } else {
-                        alert("Unable to fetch location. Please check your device settings.");
-                    }
-                    console.error("Error getting location:", error);
-                }
-            );
-        } catch (error) {
-            if (error.name === "NotAllowedError") {
-                alert("Camera access is required to proceed. Please allow camera permissions.");
-            } else {
-                alert("Unable to access the camera. Please check your device settings.");
-            }
-            console.error("Error accessing camera:", error);
-        }
-    }
-</script>
 @endsection
 

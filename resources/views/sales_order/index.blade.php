@@ -5,9 +5,7 @@
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    @if (auth()->user()->can($permission_create))
-                        <a href="{{ route('sales-order.create',['type'=>request('type')]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Create New <i class="fa fa-plus"></i></a>
-                    @endif
+                    <a href="{{ route('sales-order.create',['type'=>request('type')]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Create New <i class="fa fa-plus"></i></a>
                 </div>
                 <div class="card-header">
                     <div class="row">

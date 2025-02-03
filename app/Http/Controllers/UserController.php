@@ -20,18 +20,13 @@ class UserController extends Controller
    }
     public function dataTable()
     {
-        //$query = User::where('id','!=',3);
         $query = User::query();
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(User $user) {
                 $btn = '';
-                if(auth()->user()->can('user_edit')) {
-                    $btn .= '<a href="' . route('user.edit', ['user' => $user->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
-                }
-                if(auth()->user()->can('user_delete')) {
-                    $btn .= ' <a role="button" data-id="' . $user->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
-                }
+                $btn .= '<a href="' . route('user.edit', ['user' => $user->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                // $btn .= ' <a role="button" data-id="' . $user->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 return $btn;
             })
             ->addColumn('status', function(User $user) {
@@ -46,23 +41,11 @@ class UserController extends Controller
     }
     public function create()
     {
-        if (!auth()->user()->hasPermissionTo('user_create')) {
-            abort(403, 'Unauthorized');
-        }
-
-        $permissions = Permission::with('children')
-            ->orderBy('sort')
-            ->whereNull('parent_id')
-            ->get();
-
-        return view('user.create',compact('permissions'));
+        return view('user.create');
    }
 
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermissionTo('user_create')) {
-            abort(403, 'Unauthorized');
-        }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -96,7 +79,7 @@ class UserController extends Controller
 
             // Create a new User record in the database
             $user = User::create($validatedData);
-            $user->syncPermissions($request->permission);
+            // $user->syncPermissions($request->permission);
             // Commit the transaction
             DB::commit();
 
@@ -113,19 +96,11 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (!auth()->user()->hasPermissionTo('user_edit')) {
-            abort(403, 'Unauthorized');
-        }
-        $permissions = Permission::with('children')->orderBy('sort')->whereNull('parent_id')->get();
-
-        return view('user.edit',compact('user','permissions'));
+        return view('user.edit',compact('user'));
    }
 
     public function update(User $user,Request $request)
     {
-        if (!auth()->user()->hasPermissionTo('user_edit')) {
-            abort(403, 'Unauthorized');
-        }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
@@ -137,7 +112,7 @@ class UserController extends Controller
                 ->ignore($user)
             ],
             'role' =>[
-                'required','max:255',
+                'nullable','max:255',
             ],
             'email' =>[
                 'nullable','max:255',
@@ -166,7 +141,7 @@ class UserController extends Controller
 
             // Create a new User record in the database
             $user->update($validatedData);
-            $user->syncPermissions($request->permission);
+            // $user->syncPermissions($request->permission);
             // Commit the transaction
             DB::commit();
 
@@ -184,9 +159,6 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         try {
-            if (!auth()->user()->hasPermissionTo('user_delete')) {
-                abort(403, 'Unauthorized');
-            }
             // Delete the User record
             $user->delete();
             // Return a JSON success response
