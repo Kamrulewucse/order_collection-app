@@ -21,10 +21,10 @@ class LeaveController extends Controller
     }
     public function dataTable()
     {
-        if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+        if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])) {
             $query = Leave::with('sr', 'leaveType');
-        }else{
-            $query = Leave::with('sr', 'leaveType')->where('sr_id',auth()->user()->client_id);
+        } else {
+            $query = Leave::with('sr', 'leaveType')->where('sr_id', auth()->user()->client_id);
         }
 
         return DataTables::eloquent($query)
@@ -36,9 +36,9 @@ class LeaveController extends Controller
                     $btn .= ' <a role="button" data-id="' . $leave->id . '" class="btn btn-success btn-sm btn-approved">Approved</a> ';
                 }
                 if ($leave->status != 'approved') {
-                $btn .= '<a href="' . route('leave.edit', ['leave' => $leave->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
+                    $btn .= '<a href="' . route('leave.edit', ['leave' => $leave->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
 
-                $btn .= ' <a role="button" data-id="' . $leave->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
+                    $btn .= ' <a role="button" data-id="' . $leave->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 }
                 return $btn;
             })
@@ -59,12 +59,12 @@ class LeaveController extends Controller
             ->editColumn('end_date', function (Leave $leave) {
                 return Carbon::parse($leave->end_date)->format('d-m-Y');
             })
-            ->editColumn('status', function(Leave $leave) {
-                if ($leave->status == 'pending'){
+            ->editColumn('status', function (Leave $leave) {
+                if ($leave->status == 'pending') {
                     return '<span class="badge badge-warning">Pending</span>';
-                }elseif ($leave->status == 'approved'){
+                } elseif ($leave->status == 'approved') {
                     return '<span class="badge badge-success">Approved</span>';
-                }else{
+                } else {
                     return '<span class="badge badge-danger">Rejected</span>';
                 }
             })

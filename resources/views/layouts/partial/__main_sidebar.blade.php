@@ -86,7 +86,7 @@
                     </ul>
                 </li>
                 <?php
-                $subMenu = ['campaign.index', 'campaign.create', 'campaign.edit'];
+                $subMenu = ['campaign.index', 'campaign.create', 'campaign.edit','campaign.show'];
                 ?>
                 @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
                     <li class="nav-item">

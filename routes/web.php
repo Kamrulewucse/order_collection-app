@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
@@ -68,6 +69,10 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::resource('leave', LeaveController::class);
         Route::get('leave-datatable', [LeaveController::class, 'dataTable'])->name('leave.datatable');
         Route::get('leave-approved/{leave}', [LeaveController::class, 'leaveApproved'])->name('leave.approved');
+
+        //Leave management
+        Route::resource('campaign', CampaignController::class);
+        Route::get('campaign-datatable', [CampaignController::class, 'dataTable'])->name('campaign.datatable');
 
         //SR
         Route::resource('sr', SRController::class);
