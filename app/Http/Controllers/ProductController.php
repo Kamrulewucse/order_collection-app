@@ -29,7 +29,7 @@ class ProductController extends Controller
     }
     public function dataTable()
     {
-        $query = Product::with('unit','category');
+        $query = Product::with('unit','category','subCategory');
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Product $product) {
@@ -50,6 +50,9 @@ class ProductController extends Controller
             })
             ->addColumn('category_name', function(Product $product) {
                return $product->category->name ?? '';
+            })
+            ->addColumn('sub_category_name', function(Product $product) {
+               return $product->subCategory->name ?? '';
             })
 
             ->rawColumns(['action'])
@@ -83,6 +86,7 @@ class ProductController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'unit' => 'required',
             'category' => 'required',
+            'sub_category_id' =>'required',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -146,6 +150,7 @@ class ProductController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'unit' => 'required',
             'category' => 'required',
+            'sub_category_id' =>'required',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 

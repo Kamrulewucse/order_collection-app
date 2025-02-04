@@ -14,6 +14,15 @@
                 <form enctype="multipart/form-data" action="{{ route('product.store') }}" class="form-horizontal" method="post">
                     @csrf
                     <div class="card-body">
+                        <div class="form-group row {{ $errors->has('name') ? 'has-error' :'' }}">
+                            <label for="name" class="col-sm-2 col-form-label">Product Name <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ old('name') }}" name="name" class="form-control" id="name" placeholder="Enter Name">
+                                @error('name')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="form-group row {{ $errors->has('category') ? 'has-error' :'' }}">
                             <label for="category" class="col-sm-2 col-form-label">Category <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
@@ -28,6 +37,17 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="form-group row {{ $errors->has('sub_category') ? 'has-error' :'' }}">
+                            <label for="sub_category" class="col-sm-2 col-form-label">Sub Category <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select name="sub_category_id" id="sub_category" class="form-control select2">
+                                    <option value="">Select Sub Category</option>
+                                </select>
+                                @error('sub_category')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="form-group row {{ $errors->has('unit') ? 'has-error' :'' }}">
                             <label for="unit" class="col-sm-2 col-form-label">Unit <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
@@ -38,15 +58,6 @@
                                     @endforeach
                                 </select>
                                 @error('unit')
-                                <span class="help-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="form-group row {{ $errors->has('name') ? 'has-error' :'' }}">
-                            <label for="name" class="col-sm-2 col-form-label">Name <span class="text-danger">*</span></label>
-                            <div class="col-sm-10">
-                                <input type="text" value="{{ old('name') }}" name="name" class="form-control" id="name" placeholder="Enter Name">
-                                @error('name')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -103,5 +114,52 @@
         </div>
         <!--/.col (left) -->
     </div>
+@endsection
+
+@section('script')
+<script>
+    $(document).ready(function () {
+        const oldSubcategoryId = "{{ old('sub_category') }}";
+        const oldCategoryId = "{{ old('category') }}";
+
+        function loadSubcategories(categoryId, selectedSubcategoryId = null) {
+            if (categoryId) {
+                $.ajax({
+                    url: "{{ route('get.subcategories', ':id') }}".replace(':id', categoryId),
+                    type: 'GET',
+                    success: function (data) {
+                        $('#sub_category').empty().append('<option value="">Select Subcategory</option>');
+
+                        if (data.length > 0) {
+                            data.forEach(function (sub_category) {
+                                $('#sub_category').append(
+                                    `<option value="${sub_category.id}" ${
+                                        selectedSubcategoryId == sub_category.id ? 'selected' : ''
+                                    }>${sub_category.name}</option>`
+                                );
+                            });
+                        } else {
+                            alert('No subcategories available for the selected category.');
+                        }
+                    },
+                    error: function () {
+                        alert('Failed to load subcategories.');
+                    }
+                });
+            }
+        }
+
+        // Load subcategories if old category is selected
+        if (oldCategoryId) {
+            loadSubcategories(oldCategoryId, oldSubcategoryId);
+        }
+
+        // Handle category change
+        $('#category').change(function () {
+            const categoryId = $(this).val();
+            loadSubcategories(categoryId);
+        });
+    });
+</script>
 @endsection
 

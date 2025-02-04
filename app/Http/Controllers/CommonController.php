@@ -15,6 +15,7 @@ use App\Models\InventoryLog;
 use App\Models\Product;
 use App\Models\Room;
 use App\Models\SaleOrder;
+use App\Models\SubCategory;
 use App\Models\Thana;
 use App\Models\Voucher;
 use Carbon\Carbon;
@@ -324,4 +325,9 @@ class CommonController extends Controller
         return response()->json($thanas);
     }
 
+    public function getSubcategories($categoryId)
+    {
+        $subcategories = SubCategory::where('category_id', $categoryId)->get();
+        return response()->json($subcategories);
+    }
 }

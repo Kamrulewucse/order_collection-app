@@ -38,7 +38,7 @@
                     </li>
                 @endif
                 <?php
-                $subMenu = ['unit.index', 'unit.create', 'unit.edit', 'product.index', 'product.create', 'product.edit', 'category.index', 'category.create', 'category.edit'];
+                $subMenu = ['unit.index', 'unit.create', 'unit.edit', 'product.index', 'product.create', 'product.edit', 'category.index', 'category.create', 'category.edit','sub-category.index', 'sub-category.create', 'sub-category.edit'];
                 ?>
                 <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                     <a href="#"
@@ -70,6 +70,17 @@
                                 <i
                                     class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
                                 <p>Category</p>
+                            </a>
+                        </li>
+                        <?php
+                        $subSubMenu = ['sub-category.index', 'sub-category.create', 'sub-category.edit'];
+                        ?>
+                        <li class="nav-item">
+                            <a href="{{ route('sub-category.index') }}"
+                                class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                <i
+                                    class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                <p>Sub Category</p>
                             </a>
                         </li>
                         <?php

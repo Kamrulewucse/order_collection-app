@@ -16,6 +16,7 @@ use App\Http\Controllers\FarmVisitController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Artisan;
@@ -57,6 +58,10 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         //Category
         Route::resource('category', CategoryController::class);
         Route::get('category-datatable', [CategoryController::class, 'dataTable'])->name('category.datatable');
+
+        //Sub Category
+        Route::resource('sub-category', SubCategoryController::class);
+        Route::get('sub-category-datatable', [SubCategoryController::class, 'dataTable'])->name('subCategory.datatable');
 
         //Product
         Route::resource('product', ProductController::class);
@@ -134,6 +139,7 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::get('get_distribution_product_info', [CommonController::class, 'getDistributionProductInfo'])->name('get_distribution_product_info');
         Route::get('get_collection_amount', [CommonController::class, 'getCollectionAmount'])->name('get_collection_amount');
         Route::get('/get-thanas/{districtId}', [CommonController::class, 'getThanasByDistrict'])->name('get.thanas');
+        Route::get('get-subcategories/{category}',[CommonController::class, 'getSubcategories'])->name('get.subcategories');
 
     });
 

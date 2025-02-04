@@ -15,16 +15,36 @@
                     @csrf
                     @method('PUT')
                     <div class="card-body">
+                        <div class="form-group row {{ $errors->has('name') ? 'has-error' :'' }}">
+                            <label for="name" class="col-sm-2 col-form-label">Product Name <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ old('name',$product->name) }}" name="name" class="form-control" id="name" placeholder="Enter Name">
+                                @error('name')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="form-group row {{ $errors->has('category') ? 'has-error' :'' }}">
                             <label for="category" class="col-sm-2 col-form-label">Category <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
                                 <select name="category" id="category" class="form-control select2">
-                                    <option value="">Select Brand</option>
+                                    <option value="">Select Category</option>
                                     @foreach($categories as $category)
                                         <option {{ old('category',$product->category_id) == $category->id ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('category')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group row {{ $errors->has('sub_category') ? 'has-error' :'' }}">
+                            <label for="sub_category" class="col-sm-2 col-form-label">Sub Category <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select name="sub_category_id" id="sub_category" class="form-control select2">
+                                    <option value="">Select Brand</option>
+                                </select>
+                                @error('sub_category')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -39,15 +59,6 @@
                                     @endforeach
                                 </select>
                                 @error('unit')
-                                <span class="help-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="form-group row {{ $errors->has('name') ? 'has-error' :'' }}">
-                            <label for="name" class="col-sm-2 col-form-label">Name <span class="text-danger">*</span></label>
-                            <div class="col-sm-10">
-                                <input type="text" value="{{ old('name',$product->name) }}" name="name" class="form-control" id="name" placeholder="Enter Name">
-                                @error('name')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -104,4 +115,50 @@
         </div>
         <!--/.col (left) -->
     </div>
+@endsection
+@section('script')
+    <script>
+        $(document).ready(function () {
+            const currentCategoryId = "{{ $product->category_id }}";
+            const currentSubcategoryId = "{{ $product->sub_category_id }}";
+
+            function loadSubcategories(categoryId, selectedSubcategoryId = null) {
+                if (categoryId) {
+                    $.ajax({
+                        url: "{{ route('get.subcategories', ':id') }}".replace(':id', categoryId),
+                        type: 'GET',
+                        success: function (data) {
+                            $('#sub_category').empty().append('<option value="">Select Subcategory</option>');
+
+                            if (data.length > 0) {
+                                data.forEach(function (sub_category) {
+                                    $('#sub_category').append(
+                                        `<option value="${sub_category.id}" ${
+                                            selectedSubcategoryId == sub_category.id ? 'selected' : ''
+                                        }>${sub_category.name}</option>`
+                                    );
+                                });
+                            } else {
+                                alert('No subcategories available for the selected category.');
+                            }
+                        },
+                        error: function () {
+                            alert('Failed to load subcategories.');
+                        }
+                    });
+                }
+            }
+
+            // Load subcategories for the current category
+            if (currentCategoryId) {
+                loadSubcategories(currentCategoryId, currentSubcategoryId);
+            }
+
+            // Handle category change
+            $('#category').change(function () {
+                const categoryId = $(this).val();
+                loadSubcategories(categoryId);
+            });
+        });
+    </script>
 @endsection

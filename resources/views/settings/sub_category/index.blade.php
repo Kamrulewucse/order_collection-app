@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title','Products')
+@section('title','Sub Categories')
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <a href="{{ route('product.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Create Product <i class="fa fa-plus"></i></a>
+                    <a href="{{ route('sub-category.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Sub Category Create <i class="fa fa-plus"></i></a>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -15,12 +15,7 @@
                             <tr>
                                 <th>S/L</th>
                                 <th>Name</th>
-                                <th>Code</th>
-                                <th>Category</th>
-                                <th>Sub Category</th>
-                                <th>Unit</th>
-                                <th>Purchase Price</th>
-                                <th>Selling Price</th>
+                                <th>Category Name</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -40,19 +35,14 @@
             $('#table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('product.datatable') }}',
+                ajax: '{{ route('subCategory.datatable') }}',
                 "pagingType": "full_numbers",
                 "lengthMenu": [[10, 25, 50, -1],[10, 25, 50, "All"]
                 ],
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
-                    {data: 'code', name: 'code'},
                     {data: 'category_name', name: 'category.name'},
-                    {data: 'sub_category_name', name: 'sub_category.name'},
-                    {data: 'unit_name', name: 'unit.name'},
-                    {data: 'purchase_price', name: 'purchase_price'},
-                    {data: 'selling_price', name: 'selling_price'},
                     {
                         data: 'status',
                         name: 'status',
@@ -86,7 +76,7 @@
                         preloaderToggle(true);
                         $.ajax({
                             method: "DELETE",
-                            url: "{{ route('product.destroy', ['product' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE', id),
+                            url: "{{ route('sub-category.destroy', ['sub_category' => 'REPLACE_WITH_ID_HERE']) }}".replace('REPLACE_WITH_ID_HERE', id),
                             data: { id: id }
                         }).done(function( response ) {
                             preloaderToggle(false);
