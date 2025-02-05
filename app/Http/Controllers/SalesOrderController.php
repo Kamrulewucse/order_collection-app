@@ -96,10 +96,12 @@ class SalesOrderController extends Controller
         $srs = [];
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
             $srs = Client::where('status', 1)->where('type', 2)->get(); //type=2 is SR
+            $clients = Client::where('status', 1)->where('type', 4)->get(); //type=4 is Client
         }else{
             $srs = Client::where('status', 1)->where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
+            $clients = Client::where('status', 1)->where('type', 4)->where('sr_id',auth()->user()->client_id)->get(); //type=4 is Client
         }
-        $clients = Client::where('status', 1)->where('type', 4)->where('sr_id',auth()->user()->client_id)->get(); //type=4 is Client
+
         $products = [];
 
         $products = Product::where('status', 1)->get();

@@ -33,7 +33,7 @@
                                 <label for="client">Client <span
                                         class="text-danger">*</span></label>
                                 <select class="form-control select2" id="client" name="client" required>
-                                    <option value="">Search Name of Client</option>
+                                    <option value="">Search Client</option>
                                     @foreach($clients as $client)
                                         <option {{ old('client') == $client->id ? 'selected' : ''  }} value="{{ $client->id }}">{{ $client->name }}</option>
                                     @endforeach

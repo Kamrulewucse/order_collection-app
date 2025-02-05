@@ -148,6 +148,34 @@
                 </li>
                 @endif
                 <?php
+                $subMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit', 'leave.index', 'leave.create', 'leave.edit'];
+                ?>
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin','SR']))
+                <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tasks"></i>
+                        <p>
+                            Task Management
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <?php
+                        $subSubMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit'];
+                        ?>
+                        <li class="nav-item">
+                            <a href="{{ route('leave-types.index') }}"
+                                class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                <i
+                                    class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                <p>Assign Task</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @endif
+                <?php
                 $subMenu = ['sr.index', 'sr.create', 'sr.edit', 'doctor.index', 'doctor.create', 'doctor.edit'];
                 ?>
                  @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))

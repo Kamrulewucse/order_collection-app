@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssignTaskController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ClientController;
@@ -78,6 +79,10 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         //Leave management
         Route::resource('campaign', CampaignController::class);
         Route::get('campaign-datatable', [CampaignController::class, 'dataTable'])->name('campaign.datatable');
+
+        //Leave management
+        Route::resource('assign-task', AssignTaskController::class);
+        Route::get('assign-task-datatable', [AssignTaskController::class, 'dataTable'])->name('assign_task.datatable');
 
         //SR
         Route::resource('sr', SRController::class);
