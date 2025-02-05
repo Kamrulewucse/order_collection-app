@@ -9,6 +9,7 @@ use App\Models\Inventory;
 use App\Models\Network;
 use App\Models\Product;
 use App\Models\Client;
+use App\Models\SubCategory;
 use App\Models\Unit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -25,11 +26,27 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('settings.product.index');
+        $products = Product::get();
+        $categories = Category::get();
+        $sub_categories = SubCategory::get();
+        return view('settings.product.index',compact('products','categories','sub_categories'));
     }
     public function dataTable()
     {
         $query = Product::with('unit','category','subCategory');
+
+       // product filtering
+        if (request()->has('product') && request('product') != '') {
+            $query->where('id', request('product'));
+        }
+
+        if (request()->has('category') && request('category') != '') {
+            $query->where('category_id', request('category'));
+        }
+
+        if (request()->has('sub_category') && request('sub_category') != '') {
+            $query->where('sub_category_id', request('sub_category'));
+        }
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Product $product) {

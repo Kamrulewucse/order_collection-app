@@ -44,8 +44,7 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::get('home', function () {
             return redirect()->route('check-in.create');
         });
-        Route::get('module-dashboard', [DashboardController::class, 'moduleDashboard'])->name('dashboard');
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard_dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
         //User
@@ -83,6 +82,8 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         //Leave management
         Route::resource('assign-task', AssignTaskController::class);
         Route::get('assign-task-datatable', [AssignTaskController::class, 'dataTable'])->name('assign_task.datatable');
+        Route::post('change-task-status/{assign_task}', [AssignTaskController::class, 'changeStatus'])->name('assign-task.status');
+        Route::post('/assign-task/cost', [AssignTaskController::class, 'storeTaskCost'])->name('assign_task_cost.store');
 
         //SR
         Route::resource('sr', SRController::class);
@@ -144,6 +145,7 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::get('get_distribution_product_info', [CommonController::class, 'getDistributionProductInfo'])->name('get_distribution_product_info');
         Route::get('get_collection_amount', [CommonController::class, 'getCollectionAmount'])->name('get_collection_amount');
         Route::get('/get-thanas/{districtId}', [CommonController::class, 'getThanasByDistrict'])->name('get.thanas');
+        Route::get('get-subcategories/{category}',[CommonController::class, 'getSubcategories'])->name('get.subcategories');
         Route::get('get-subcategories/{category}',[CommonController::class, 'getSubcategories'])->name('get.subcategories');
 
     });

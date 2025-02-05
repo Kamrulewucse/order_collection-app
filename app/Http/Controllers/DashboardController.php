@@ -12,10 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function moduleDashboard()
-    {
-        return view('layouts.admin_dashboard');
-    }
     public function index(Request $request)
     {
         if (in_array(auth()->user()->role, ['Doctor'])) {

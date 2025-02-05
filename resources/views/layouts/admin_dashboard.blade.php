@@ -50,7 +50,7 @@
                     <div class="col-xl-3 col-md-3 col-xs-4 col-6">
                         <div class="card">
                             <div class="card-block">
-                                <a href="{{ route('dashboard_dashboard') }}" id="adminDashboard">
+                                <a href="{{ route('dashboard') }}" id="adminDashboard">
                                     <div class="row align-items-center">
                                         <div class="col-12 text-center">
                                             <img class="o_app_icon" src="{{ asset('images/dashboard.png') }}">
@@ -64,7 +64,7 @@
                     <div class="col-xl-3 col-md-3 col-xs-4 col-6">
                         <div class="card">
                             <div class="card-block">
-                                <a href="{{ route('dashboard_dashboard') }}" id="srDashboard">
+                                <a href="{{ route('dashboard') }}" id="srDashboard">
                                     <div class="row align-items-center">
                                         <div class="col-12 text-center">
                                             <img class="o_app_icon" src="{{ asset('images/sale.png') }}">
@@ -78,7 +78,7 @@
                     <div class="col-xl-3 col-md-3 col-xs-4 col-6">
                         <div class="card">
                             <div class="card-block">
-                                <a href="{{ route('dashboard_dashboard') }}" id="doctorDashboard">
+                                <a href="{{ route('dashboard') }}" id="doctorDashboard">
                                     <div class="row align-items-center">
                                         <div class="col-12 text-center">
                                             <img class="o_app_icon" src="{{ asset('images/doctor.png') }}">

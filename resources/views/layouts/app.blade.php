@@ -25,12 +25,12 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    @if(Route::currentRouteName() == 'dashboard_dashboard')
+                    @if(Route::currentRouteName() == 'dashboard')
                         <div class="col-8 col-md-10">
                             <h1 class="m-0">@yield('title')</h1>
                         </div>
                         <div class="col-4 col-md-2">
-                            <form action="{{ route('dashboard_dashboard') }}" id="dashboard_year_form" method="get">
+                            <form action="{{ route('dashboard') }}" id="dashboard_year_form" method="get">
                                 <div id="report-range" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
                                     <i class="fa fa-calendar"></i>&nbsp;
                                     <span></span> <i class="fa fa-caret-down"></i>

@@ -18,8 +18,8 @@
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="{{ route('dashboard_dashboard') }}"
-                        class="nav-link {{ Route::currentRouteName() == 'dashboard_dashboard' ? 'active' : '' }}">
+                    <a href="{{ route('dashboard') }}"
+                        class="nav-link {{ Route::currentRouteName() == 'dashboard' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
@@ -148,9 +148,8 @@
                 </li>
                 @endif
                 <?php
-                $subMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit', 'leave.index', 'leave.create', 'leave.edit'];
+                $subMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
                 ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin','SR']))
                 <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                     <a href="#"
                         class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
@@ -162,19 +161,18 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <?php
-                        $subSubMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit'];
+                        $subSubMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
                         ?>
                         <li class="nav-item">
-                            <a href="{{ route('leave-types.index') }}"
+                            <a href="{{ route('assign-task.index') }}"
                                 class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
                                 <i
                                     class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                <p>Assign Task</p>
+                                <p>Task List</p>
                             </a>
                         </li>
                     </ul>
                 </li>
-                @endif
                 <?php
                 $subMenu = ['sr.index', 'sr.create', 'sr.edit', 'doctor.index', 'doctor.create', 'doctor.edit'];
                 ?>

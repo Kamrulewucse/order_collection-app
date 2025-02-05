@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Enumeration\TransactionType;
-use App\Enumeration\VoucherType;
-use App\Models\AccountHead;
 use App\Models\Cash;
 use App\Models\SaleOrder;
 use App\Models\SaleOrderItem;
-use App\Models\Inventory;
 use App\Models\InventoryLog;
 use App\Models\Product;
 use App\Models\Client;
 use App\Models\LocationAddressInfo;
 use App\Models\SalePayment;
 use App\Models\Transaction;
-use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
