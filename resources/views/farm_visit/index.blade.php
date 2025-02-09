@@ -19,6 +19,9 @@
                                 <th>Visit Date</th>
                                 <th>Visit Time</th>
                                 <th>Reason</th>
+                                @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                                <th>Visit Location</th>
+                                @endif
                                 <th>Image</th>
                                 <th>Action</th>
                             </tr>
@@ -31,6 +34,9 @@
                                     <td>{{ $farmVisit->doctor->name }}</td>
                                     <td>{{ date('d-m-Y',strtotime($farmVisit->visit_time)) }}</td>
                                     <td>{{ date('h:i:s A',strtotime($farmVisit->visit_time)) }}</td>
+                                    @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                                    <td>{{ $farmVisit->location_address ?? '' }}</td>
+                                    @endif
                                     <td>{{ $farmVisit->reason }}</td>
                                     <td><a href="{{asset($farmVisit->location_image)}}" target="_blank">
                                         <img src="{{asset($farmVisit->location_image)}}" width="60" alt="Image"/>

@@ -38,7 +38,7 @@
                     </li>
                 @endif
                 <?php
-                $subMenu = ['unit.index', 'unit.create', 'unit.edit', 'product.index', 'product.create', 'product.edit', 'category.index', 'category.create', 'category.edit','sub-category.index', 'sub-category.create', 'sub-category.edit'];
+                $subMenu = ['unit.index', 'unit.create', 'unit.edit', 'product.index', 'product.create', 'product.edit', 'category.index', 'category.create', 'category.edit', 'sub-category.index', 'sub-category.create', 'sub-category.edit'];
                 ?>
                 <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                     <a href="#"
@@ -97,86 +97,9 @@
                     </ul>
                 </li>
                 <?php
-                $subMenu = ['campaign.index', 'campaign.create', 'campaign.edit','campaign.show'];
-                ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
-                    <li class="nav-item">
-                        <a href="{{ route('campaign.index') }}"
-                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-bullhorn"></i>
-                            <p>Campaign</p>
-                        </a>
-                    </li>
-                @endif
-                <?php
-                $subMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit', 'leave.index', 'leave.create', 'leave.edit'];
-                ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin','SR']))
-                <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
-                    <a href="#"
-                        class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-briefcase"></i>
-                        <p>
-                            Leave
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <?php
-                        $subSubMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit'];
-                        ?>
-                        <li class="nav-item">
-                            <a href="{{ route('leave-types.index') }}"
-                                class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
-                                <i
-                                    class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                <p>Leave Types</p>
-                            </a>
-                        </li>
-                        <?php
-                        $subSubMenu = ['leave.index', 'leave.create', 'leave.edit'];
-                        ?>
-                        <li class="nav-item">
-                            <a href="{{ route('leave.index') }}"
-                                class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
-                                <i
-                                    class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                <p>Leave</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                @endif
-                <?php
-                $subMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
-                ?>
-                <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
-                    <a href="#"
-                        class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-tasks"></i>
-                        <p>
-                            Task Management
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <?php
-                        $subSubMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
-                        ?>
-                        <li class="nav-item">
-                            <a href="{{ route('assign-task.index') }}"
-                                class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
-                                <i
-                                    class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                <p>Task List</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <?php
                 $subMenu = ['sr.index', 'sr.create', 'sr.edit', 'doctor.index', 'doctor.create', 'doctor.edit'];
                 ?>
-                 @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
                     <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                         <a href="#"
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
@@ -217,45 +140,45 @@
                 <?php
                 $subMenu = ['farm.index', 'farm.create', 'farm.edit', 'farm-visit.index', 'farm-visit.create', 'farm-visit.edit'];
                 ?>
-                  @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin','Doctor']))
-                <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
-                    <a href="#"
-                        class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-md"></i>
-                        <p>
-                            Doctor Panel
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <?php
-                        $subSubMenu = ['farm.index', 'farm.create', 'farm.edit'];
-                        ?>
-                        @if (in_array(auth()->user()->role, ['Doctor', 'Admin', 'SuperAdmin']))
-                            <li class="nav-item">
-                                <a href="{{ route('farm.index') }}"
-                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
-                                    <i
-                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                    <p>Farm</p>
-                                </a>
-                            </li>
-                        @endif
-                        <?php
-                        $subSubMenu = ['farm-visit.index', 'farm-visit.create', 'farm-visit.edit'];
-                        ?>
-                        @if (in_array(auth()->user()->role, ['Doctor', 'Admin', 'SuperAdmin']))
-                            <li class="nav-item">
-                                <a href="{{ route('farm-visit.index') }}"
-                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
-                                    <i
-                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                    <p>Farm Visit</p>
-                                </a>
-                            </li>
-                        @endif
-                    </ul>
-                </li>
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Doctor']))
+                    <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
+                        <a href="#"
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-md"></i>
+                            <p>
+                                Doctor Panel
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php
+                            $subSubMenu = ['farm.index', 'farm.create', 'farm.edit'];
+                            ?>
+                            @if (in_array(auth()->user()->role, ['Doctor', 'Admin', 'SuperAdmin']))
+                                <li class="nav-item">
+                                    <a href="{{ route('farm.index') }}"
+                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                        <i
+                                            class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                        <p>Farm</p>
+                                    </a>
+                                </li>
+                            @endif
+                            <?php
+                            $subSubMenu = ['farm-visit.index', 'farm-visit.create', 'farm-visit.edit'];
+                            ?>
+                            @if (in_array(auth()->user()->role, ['Doctor', 'Admin', 'SuperAdmin']))
+                                <li class="nav-item">
+                                    <a href="{{ route('farm-visit.index') }}"
+                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                        <i
+                                            class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                        <p>Farm Visit</p>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
                 @endif
                 <?php
                 $subMenu = ['sales-order.index', 'sales-order.create', 'sales-order.edit', 'sales-order.details', 'sales-order.day_close', 'sales-order.customer_sale_details', 'sales-order.customer_sale_entry', 'sales-order.customer_damage_product_entry', 'sales-order.final_details', 'client-payments', 'sales-order.details', 'client.index', 'client.create', 'client.edit'];
@@ -267,7 +190,7 @@
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) && request('type') == 1 ? 'active' : '' }}">
                             <i class="nav-icon fa-solid fa-shopping-cart"></i>
                             <p>
-                                SR Sales Panel
+                                SR Collection
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
@@ -281,7 +204,7 @@
                                         class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
                                         <i
                                             class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                        <p>Client</p>
+                                        <p>Client List</p>
                                     </a>
                                 </li>
                             @endif
@@ -318,8 +241,87 @@
 
                         </ul>
                     </li>
+                @endif
+                <?php
+                $subMenu = ['campaign.index', 'campaign.create', 'campaign.edit', 'campaign.show'];
+                ?>
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                    <li class="nav-item">
+                        <a href="{{ route('campaign.index') }}"
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-bullhorn"></i>
+                            <p>Campaign</p>
+                        </a>
+                    </li>
+                @endif
+                <?php
+                $subMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit', 'leave.index', 'leave.create', 'leave.edit'];
+                ?>
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'SR']))
+                    <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
+                        <a href="#"
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-briefcase"></i>
+                            <p>
+                                Leave
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php
+                            $subSubMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('leave-types.index') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Leave Types</p>
+                                </a>
+                            </li>
+                            <?php
+                            $subSubMenu = ['leave.index', 'leave.create', 'leave.edit'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('leave.index') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Leave</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+                <?php
+                $subMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
+                ?>
+                <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tasks"></i>
+                        <p>
+                            Task Management
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <?php
+                        $subSubMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
+                        ?>
+                        <li class="nav-item">
+                            <a href="{{ route('assign-task.index') }}"
+                                class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                <i
+                                    class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                <p>Task List</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'SR']))
                     <?php
-                    $subMenu = ['report.sales_report','sales_report_tracking'];
+                    $subMenu = ['report.sales_report', 'sales_report_tracking'];
                     ?>
                     <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                         <a href="#"
@@ -332,18 +334,22 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="{{ route('report.sales_report') }}" class="nav-link {{ Route::currentRouteName() == 'report.sales_report' ? 'active' : '' }}">
-                                    <i class="far  {{ Route::currentRouteName() == 'report.sales_report' ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                <a href="{{ route('report.sales_report') }}"
+                                    class="nav-link {{ Route::currentRouteName() == 'report.sales_report' ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ Route::currentRouteName() == 'report.sales_report' ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
                                     <p>Sales Report</p>
                                 </a>
                             </li>
                             @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
-                            <li class="nav-item">
-                                <a href="{{ route('sales_report_tracking') }}" class="nav-link {{ Route::currentRouteName() == 'sales_report_tracking' ? 'active' : '' }}">
-                                    <i class="far  {{ Route::currentRouteName() == 'sales_report_tracking' ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                    <p>Tacking Report</p>
-                                </a>
-                            </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('sales_report_tracking') }}"
+                                        class="nav-link {{ Route::currentRouteName() == 'sales_report_tracking' ? 'active' : '' }}">
+                                        <i
+                                            class="far  {{ Route::currentRouteName() == 'sales_report_tracking' ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                        <p>Tacking Report</p>
+                                    </a>
+                                </li>
                             @endif
                         </ul>
                     </li>

@@ -97,6 +97,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-12">
+                                <div class="table-responsive">
                                 <table class="table table-bordered">
                                    <thead>
                                        <tr>
@@ -165,6 +166,7 @@
                                         </tr>
                                     </tfoot>
                                 </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -512,33 +514,63 @@
             }
         }
     </script>
-    <script type="text/javascript">
-        andLocation();
-        async function andLocation() {
-            try {
-                // Request location access
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        $("#latitude").val(position.coords.latitude);
-                        $("#longitude").val(position.coords.longitude);
-                    },
-                    (error) => {
-                        if (error.code === error.PERMISSION_DENIED) {
-                            alert("Location access is required to proceed. Please enable location permissions.");
-                        } else {
-                            alert("Unable to fetch location. Please check your device settings.");
-                        }
-                        console.error("Error getting location:", error);
+<script type="text/javascript">
+    // andLocation();
+    // async function andLocation() {
+    //     try {
+    //         // Request location access
+    //         navigator.geolocation.getCurrentPosition(
+    //             (position) => {
+    //                 $("#latitude").val(position.coords.latitude);
+    //                 $("#longitude").val(position.coords.longitude);
+    //             },
+    //             (error) => {
+    //                 if (error.code === error.PERMISSION_DENIED) {
+    //                     alert("Location access is required to proceed. Please enable location permissions.");
+    //                 } else {
+    //                     alert("Unable to fetch location. Please check your device settings.");
+    //                 }
+    //                 console.error("Error getting location:", error);
+    //             }
+    //         );
+    //     } catch (error) {
+    //         console.error("Unexpected error:", error);
+    //     }
+    // }
+</script>
+<script type="text/javascript">
+    andLocation();
+
+    async function andLocation() {
+        try {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    document.getElementById("latitude").value = position.coords.latitude;
+                    document.getElementById("longitude").value = position.coords.longitude;
+                    
+                    // Notify Flutter that location access was granted
+                    if (window.LocationChannel) {
+                        window.LocationChannel.postMessage("requestLocationGranted");
                     }
-                );
-            } catch (error) {
-                if (error.name === "NotAllowedError") {
-                    alert("Camera access is required to proceed. Please allow camera permissions.");
-                } else {
-                    alert("Unable to access the camera. Please check your device settings.");
+                },
+                (error) => {
+                    if (error.code === error.PERMISSION_DENIED) {
+                        alert("Location access is required to proceed. Please enable location permissions.");
+                        
+                        // Notify Flutter that location access was denied
+                        if (window.LocationChannel) {
+                            window.LocationChannel.postMessage("requestLocationDenied");
+                        }
+                    } else {
+                        alert("Unable to fetch location. Please check your device settings.");
+                    }
+                    console.error("Error getting location:", error);
                 }
-                console.error("Error accessing camera:", error);
-            }
+            );
+        } catch (error) {
+            console.error("Unexpected error:", error);
         }
-    </script>
+    }
+</script>
+
 @endsection

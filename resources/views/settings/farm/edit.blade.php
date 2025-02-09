@@ -97,7 +97,7 @@
                         <div class="form-group row {{ $errors->has('latitude') ? 'has-error' :'' }}">
                             <label for="latitude" class="col-sm-2 col-form-label">Latitude <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" value="{{ old('latitude',$farm->latitude) }}" name="latitude" class="form-control" id="latitude" placeholder="Enter latitude">
+                                <input type="number" step="any" value="{{ old('latitude',$farm->latitude) }}" name="latitude" class="form-control" id="latitude" placeholder="Enter latitude">
                                 @error('latitude')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
@@ -106,7 +106,7 @@
                         <div class="form-group row {{ $errors->has('longitude') ? 'has-error' :'' }}">
                             <label for="longitude" class="col-sm-2 col-form-label">Longitude <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" value="{{ old('longitude',$farm->longitude) }}" name="longitude" class="form-control" id="longitude" placeholder="Enter longitude">
+                                <input type="number" step="any" value="{{ old('longitude',$farm->longitude) }}" name="longitude" class="form-control" id="longitude" placeholder="Enter longitude">
                                 @error('longitude')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
