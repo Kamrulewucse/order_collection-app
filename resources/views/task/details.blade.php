@@ -88,6 +88,7 @@
                                     <th class="text-center">Task Details</th>
                                     <th class="text-center">Task Priority</th>
                                     <th class="text-center">Task Date</th>
+                                    <th class="text-center">Task Cost</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -97,9 +98,16 @@
                                         <td>{{ $item->task_details }}</td>
                                         <td class="text-center">{{ $item->task_priority }}</td>
                                         <td class="text-center">{{ $item->date }}</td>
+                                        <td class="text-center">{{ number_format($item->task_cost,2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-right">Total</th>
+                                    <th class="text-center">{{ number_format($task->task_total_cost,2) }}</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

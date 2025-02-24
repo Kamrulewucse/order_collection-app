@@ -27,14 +27,18 @@ class TaskController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function (Task $task) {
                 $btn = '';
-                $btn .= '<button data-id="' . $task->id . '" role="button" class="dropdown-item task-cost-btn">Task Cost</button>';
-                $btn .= '<button data-id="' . $task->id . '" data-status="On Going" role="button" class="dropdown-item status-btn">On Going</button>';
-                $btn .= '<button data-id="' . $task->id . '" data-status="Done" role="button" class="dropdown-item status-btn">Done</button>';
+                // $btn .= '<button data-id="' . $task->id . '" role="button" class="dropdown-item task-cost-btn">Task Cost</button>';
+                // $btn .= '<button data-id="' . $task->id . '" data-status="On Going" role="button" class="dropdown-item status-btn">On Going</button>';
+                // $btn .= '<button data-id="' . $task->id . '" data-status="Done" role="button" class="dropdown-item status-btn">Done</button>';
+                $btn .= ' <a href="'.route('task.details',['task'=>$task->id]).'" class="btn btn-info bg-gradient-info btn-sm">Details</a>';
 
-                return dropdownMenuContainer($btn);
+                return $btn;
             })
             ->addColumn('user', function (Task $task) {
                 return $task->user->name ?? '';
+            })
+            ->addColumn('task_total_cost', function (Task $task) {
+                return number_format($task->task_total_cost,2);
             })
             ->editColumn('date', function (Task $task) {
                 return Carbon::parse($task->date)->format('d-m-Y');
@@ -68,6 +72,7 @@ class TaskController extends Controller
             'date' => 'required',
             'task_priority.*' => 'required|string|max:255',
             'task_details.*' => 'required|string|max:1500',
+            'task_cost.*' => 'required|numeric',
             'task_date.*' => 'required|date|date_format:d-m-Y',
         ]);
         // Start a database transaction
@@ -77,6 +82,7 @@ class TaskController extends Controller
             $task = new Task();
             $task->user_id = $request->task_user;
             $task->date = date('Y-m-d',strtotime($request->date));
+            $task->task_total_cost = array_sum($request->task_cost);
             $task->status = 1;
             $task->save();
 
@@ -89,6 +95,7 @@ class TaskController extends Controller
                 $taskDetail->date = Carbon::parse($request->task_date[$key]);
                 $taskDetail->task_priority = $request->task_priority[$key];
                 $taskDetail->task_details = $request->task_details[$key];
+                $taskDetail->task_cost = $request->task_cost[$key];
                 $taskDetail->status = 1; // 1 for assign
                 $taskDetail->save();
             }

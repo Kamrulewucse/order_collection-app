@@ -18,6 +18,7 @@
                                 <th>S/L</th>
                                 <th>Task Created Date</th>
                                 <th>User Name</th>
+                                <th>Task Cost</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -77,6 +78,7 @@
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className:'text-center'},
                     {data: 'date', name: 'date'},
                     {data: 'user', name: 'user.name'},
+                    {data: 'task_total_cost', name: 'task_total_cost'},
                     {data: 'action', name: 'action', orderable: false, searchable: false, className:'text-center'},
                 ],
                 dom: 'lBfrtip',
