@@ -42,6 +42,7 @@
 <script src="{{ asset('themes/backend/jquery-ui-1.13.2.custom/jquery-ui.js') }}"></script>
 <script src="{{ asset('themes/backend/month-picker/MonthPicker.min.js') }}"></script>
 <script src="{{ asset('themes/backend/ui-date-picker/cdn.jsdelivr.net_gh_digitalBush_jquery.maskedinput@1.4.1_dist_jquery.maskedinput.min.js') }}"></script>
+<script src="{{ asset('assets/js/custom.js') }}"></script>
 <script>
     $(function () {
         $.ajaxSetup({
