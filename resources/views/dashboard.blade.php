@@ -77,19 +77,9 @@
         }
         .bootstrap-datetimepicker-widget table td.day {
             height: 10px;
-            line-height: 10px;
+            line-height: 5px;
             width: 10px;
         }
-        /* .jcgmt-clockHolder{
-            width: 150px;
-        }
-        .jcgmt-rotatingWrapper{
-            width: 150px;
-            height: 150px;
-        }
-        .jcgmt-clock{
-            width: 150px;
-        } */
     </style>
 @endsection
 
@@ -122,8 +112,8 @@
                             </p>
                             <ul class="ml-4 mb-0 fa-ul text-muted">
                                 <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span>
-                                    Email: {{auth()->user()->email ?? '' }}</li>
-                                <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Mobile #: {{auth()->user()->mobile_no ?? '' }}</li>
+                                    {{auth()->user()->email ?? '' }}</li>
+                                <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span>{{auth()->user()->mobile_no ?? '' }}</li>
                             </ul>
                         </div>
                         <div class="col-5 text-center">
@@ -173,6 +163,73 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header border-0">
+                  <div class="d-flex justify-content-between">
+                    <h3 class="card-title">Sales</h3>
+                    <a href="javascript:void(0);">View Report</a>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex">
+                    <p class="d-flex flex-column">
+                      <span class="text-bold text-lg">$18,230.00</span>
+                      <span>Sales Over Time</span>
+                    </p>
+                    <p class="ml-auto d-flex flex-column text-right">
+                      <span class="text-success">
+                        <i class="fas fa-arrow-up"></i> 33.1%
+                      </span>
+                      <span class="text-muted">Since last month</span>
+                    </p>
+                  </div>
+                  <!-- /.d-flex -->
+  
+                  <div class="position-relative mb-4">
+                    <canvas id="sales-chart" height="200"></canvas>
+                  </div>
+  
+                  <div class="d-flex flex-row justify-content-end">
+                    <span class="mr-2">
+                      <i class="fas fa-square text-primary"></i> This year
+                    </span>
+  
+                    <span>
+                      <i class="fas fa-square text-gray"></i> Last year
+                    </span>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="fas fa-chart-pie mr-1"></i>
+                    Sales
+                  </h3>
+                  {{-- <div class="card-tools">
+                    <ul class="nav nav-pills ml-auto">
+                      
+                      <li class="nav-item">
+                        <a class="nav-link active" href="#sales-chart" data-toggle="tab">Donut</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#revenue-chart" data-toggle="tab">Area</a>
+                      </li>
+                    </ul>
+                  </div> --}}
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+              </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-12 col-md-3">
             {{-- <a href="{{ route('sales.index',['start_date'=>$startDate,'end_date'=>$endDate,'type'=>'regular']) }}" class="info-box"> --}}
             <a href="" class="info-box">
@@ -215,14 +272,7 @@
             </a>
         </div>
     </div>
-    <div class="row">
-        {{-- <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div id="purchases-chart"></div>
-                    </div>
-                </div>
-            </div> --}}
+    {{-- <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
@@ -249,7 +299,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
 @endsection
 
@@ -272,6 +322,120 @@
 
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        $(function(){
+            /* Chart.js Charts */
+            // Donut Chart
+            var pieChartCanvas = $('#sales-chart-canvas').get(0).getContext('2d')
+            var pieData = {
+                labels: [
+                'Instore Sales',
+                'Download Sales',
+                'Mail-Order Sales'
+                ],
+                datasets: [
+                {
+                    data: [30, 12, 20],
+                    backgroundColor: ['#f56954', '#00a65a', '#f39c12']
+                }
+                ]
+            }
+            var pieOptions = {
+                legend: {
+                display: false
+                },
+                maintainAspectRatio: false,
+                responsive: true
+            }
+            // Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            // eslint-disable-next-line no-unused-vars
+            var pieChart = new Chart(pieChartCanvas, { // lgtm[js/unused-local-variable]
+                type: 'doughnut',
+                data: pieData,
+                options: pieOptions
+            })
+
+        });
+    </script>
+    <script>
+        $(function(){
+            var ticksStyle = {
+                fontColor: '#495057',
+                fontStyle: 'bold'
+            }
+
+            var mode = 'index'
+            var intersect = true
+
+            var $salesChart = $('#sales-chart')
+            // eslint-disable-next-line no-unused-vars
+            var salesChart = new Chart($salesChart, {
+                type: 'bar',
+                data: {
+                labels: ['JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                datasets: [
+                    {
+                    backgroundColor: '#007bff',
+                    borderColor: '#007bff',
+                    data: [1000, 2000, 3000, 2500, 2700, 2500, 3000]
+                    },
+                    {
+                    backgroundColor: '#ced4da',
+                    borderColor: '#ced4da',
+                    data: [700, 1700, 2700, 2000, 1800, 1500, 2000]
+                    }
+                ]
+                },
+                options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                hover: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    yAxes: [{
+                    // display: false,
+                    gridLines: {
+                        display: true,
+                        lineWidth: '4px',
+                        color: 'rgba(0, 0, 0, .2)',
+                        zeroLineColor: 'transparent'
+                    },
+                    ticks: $.extend({
+                        beginAtZero: true,
+
+                        // Include a dollar sign in the ticks
+                        callback: function (value) {
+                        if (value >= 1000) {
+                            value /= 1000
+                            value += 'k'
+                        }
+
+                        return '$' + value
+                        }
+                    }, ticksStyle)
+                    }],
+                    xAxes: [{
+                    display: true,
+                    gridLines: {
+                        display: false
+                    },
+                    ticks: ticksStyle
+                    }]
+                }
+                }
+            })
+
+        });
+    </script>
     <script>
         let map;
         document.addEventListener("DOMContentLoaded", function () {

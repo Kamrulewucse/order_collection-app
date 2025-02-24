@@ -151,6 +151,7 @@
 </script>
 @yield('script')
 <!-- AdminLTE App -->
+<script src="{{ asset('themes/backend/chart.js/dist/Chart.js') }}"></script>
 <script src="{{ asset('themes/backend/dist/js/adminlte.min.js') }}"></script>
 </body>
 </html>
