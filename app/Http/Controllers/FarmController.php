@@ -22,7 +22,7 @@ class FarmController extends Controller
     }
     public function dataTable()
     {
-        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
             $query = Client::with('doctor','district','thana')->where('type',5); //Farm
         }else{
             $query = Client::with('doctor','district','thana')->where('type',5)->where('doctor_id',auth()->user()->client_id); //type 5 for Farm
@@ -109,18 +109,18 @@ class FarmController extends Controller
             unset($validatedData['thana']);
             $farm = Client::create($validatedData);
             // Create/Update User
-            $user = User::where('role','Farm')->where('client_id',$farm->id)->first();
-            if (!$user){
-                $user = new User();
-            }
-            $user->role = 'Farm';
-            $user->client_id = $farm->id;
-            $user->name = $request->name;
-            $user->username  = $request->mobile_no;
-            $user->email = $request->email;
-            $user->mobile_no = $request->mobile_no;
-            $user->password = bcrypt('12345678');
-            $user->save();
+            // $user = User::where('role','Farm')->where('client_id',$farm->id)->first();
+            // if (!$user){
+            //     $user = new User();
+            // }
+            // $user->role = 'Farm';
+            // $user->client_id = $farm->id;
+            // $user->name = $request->name;
+            // $user->username  = $request->mobile_no;
+            // $user->email = $request->email;
+            // $user->mobile_no = $request->mobile_no;
+            // $user->password = bcrypt('12345678');
+            // $user->save();
 
             // Commit the transaction
             DB::commit();

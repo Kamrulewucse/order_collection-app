@@ -66,6 +66,89 @@
 @include('layouts.partial.__media_files')
 <!-- REQUIRED SCRIPTS -->
 @include('layouts.partial.__scripts')
+<script>
+    function isInWebView() {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        return /wv|WebView/i.test(userAgent); // Check for WebView
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        if (isInWebView()) {
+            console.log("Running in WebView, skipping geolocation tracking.");
+            return;
+        }
+        if (!navigator.geolocation) {
+            alert("Geolocation not supported");
+            return;
+        }
+
+        navigator.permissions.query({ name: 'geolocation' }).then(function (result) {
+            if (result.state === 'granted') {
+                startTracking();
+            } else if (result.state === 'prompt') {
+                alert("Please allow location access to track your movement.");
+                startTracking();
+            } else {
+                alert("Location access is denied. Please enable location access in your browser settings.");
+            }
+        });
+
+        function startTracking() {
+            const watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    if (position.coords.accuracy > 30) {
+                        console.log("Low accuracy, skipping update");
+                        return;
+                    }
+                    console.log("Updated Location:", position.coords.latitude, position.coords.longitude);
+                    console.log("Accuracy:", position.coords.accuracy);
+
+                    // Send to Laravel
+                    fetch("{{ route('tracking.update_location') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log("Server Response:", data))
+                    .catch(error => console.error("Error updating location:", error));
+                },
+                showError,
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 10000
+                }
+            );
+        }
+
+        function showError(error) {
+            console.warn("Error getting location:", error.message);
+            if (error.code === error.PERMISSION_DENIED) {
+                alert("You need to allow location access.");
+            }
+        }
+    });
+
+    window.addEventListener("beforeunload", function () {
+        navigator.sendBeacon("{{ route('tracking.set_offline') }}", JSON.stringify({
+            _token: "{{ csrf_token() }}",
+        }));
+    });
+
+    function updateLocation(lat, lon, accuracy){
+        let authId = '{{ auth()->user()->id }}';
+        alert(accuracy);
+        alert(lat);
+        alert(lon);
+    }
+</script>
 @yield('script')
 <!-- AdminLTE App -->
 <script src="{{ asset('themes/backend/dist/js/adminlte.min.js') }}"></script>

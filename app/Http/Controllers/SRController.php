@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AccountHead;
 use App\Models\Channel;
 use App\Models\DistributionOrder;
+use App\Models\DivisionalUser;
 use App\Models\Network;
 use App\Models\PurchaseOrder;
 use App\Models\Client;
@@ -40,6 +41,9 @@ class SRController extends Controller
             ->addColumn('district_name', function(Client $client) {
                 return $client->district->name_eng ?? '';
             })
+            ->addColumn('divisional_admin', function(Client $client) {
+                return $client->divisionalAdmin->name ?? '';
+            })
             ->addColumn('thana_name', function(Client $client) {
                 return $client->thana->name_eng ?? '';
             })
@@ -53,8 +57,9 @@ class SRController extends Controller
      */
     public function create()
     {
+        $divisionalUsers = DivisionalUser::where('status',1)->get();
         $districts = District::where('status',1)->get();
-        return view('settings.sr.create',compact('districts'));
+        return view('settings.sr.create',compact('districts','divisionalUsers'));
     }
 
     /**
@@ -79,6 +84,7 @@ class SRController extends Controller
                 Rule::unique('clients')
                     ->where('type',2)
             ],
+            'divisional_user_id' =>['required'],
             'district' =>['required'],
             'thana' =>['required'],
             'address' => 'nullable|string|max:255', // Make 'address' nullable
@@ -136,10 +142,11 @@ class SRController extends Controller
         if ($sr->type != 2) {
             abort(404);
         }
+        $divisionalUsers = DivisionalUser::where('status',1)->get();
         $districts = District::where('status',1)->get();
         try {
             // If the Client exists, display the edit view
-            return view('settings.sr.edit', compact('sr','districts'));
+            return view('settings.sr.edit', compact('sr','districts','divisionalUsers'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Handle the case where the Client is not found
             return redirect()->route('sr.index')->with('error', 'SR not found: '.$e->getMessage());
@@ -175,6 +182,7 @@ class SRController extends Controller
                     ->ignore($sr)
             ],
             'address' => 'nullable|string|max:255', // Make 'address' nullable
+            'divisional_admin_id' =>['required'],
             'district' =>['required'],
             'thana' =>['required'],
             'status' => 'required|boolean', // Ensure 'status' is boolean

@@ -7,7 +7,21 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
+function shortName($name){
+
+    $firstName = Str::of($name)->before(' ');
+    $lastName = Str::of($name)->after(' ');
+
+    if ($lastName) {
+        $shortName = strtoupper($firstName[0] . $lastName[0]);
+    } else {
+        $shortName = strtoupper($firstName[0]);
+    }
+
+    return $shortName;
+}
 function numberToMonthName($monthNumber){
     if ($monthNumber != '')
         return Carbon::create(null, $monthNumber, 1)->format('F');

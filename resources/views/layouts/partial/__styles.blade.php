@@ -43,7 +43,7 @@
 <link href="{{ asset('themes/backend/jquery-ui-1.13.2.custom/jquery-ui.css') }}" rel="stylesheet" type="text/css"/>
 
 <link href="{{ asset('themes/backend/month-picker/MonthPicker.min.css') }}" rel="stylesheet" type="text/css"/>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.2.0/magnific-popup.min.css" integrity="sha512-lvaVbvmbHhG8cmfivxLRhemYlTT60Ly9Cc35USrpi8/m+Lf/f/T8x9kEIQq47cRj1VQIFuxTxxCcvqiQeQSHjQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <!-- Theme style -->
 <link rel="stylesheet" href="{{ asset('themes/backend/dist/css/adminlte.min.css') }}">

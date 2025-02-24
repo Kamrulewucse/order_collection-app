@@ -29,6 +29,9 @@ class Client extends Model
     {
         return $this->belongsTo(Client::class, 'doctor_id', 'id');
     }
+    public function divisionalAdmin(){
+        return $this->belongsTo(DivisionalUser::class,'divisional_user_id');
+    }
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id', 'id');

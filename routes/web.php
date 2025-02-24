@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AssignTaskController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ClientController;
@@ -12,10 +12,13 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DivisionalUserController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmVisitController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\RequisitionOrderController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\UnitController;
@@ -35,6 +38,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+
 Route::middleware('checkDatabaseConnection')->group(function (){
     Route::get('/', function () {
         return redirect()->route('login');
@@ -50,6 +54,10 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         //User
         Route::resource('user', UserController::class);
         Route::get('user-datatable', [UserController::class, 'dataTable'])->name('user.datatable');
+        
+        //Divisional User
+        Route::resource('divisional-user', DivisionalUserController::class);
+        Route::get('divisional-user-datatable', [DivisionalUserController::class, 'dataTable'])->name('divisional-user.datatable');
 
         //Unit
         Route::resource('unit', UnitController::class);
@@ -79,11 +87,19 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::resource('campaign', CampaignController::class);
         Route::get('campaign-datatable', [CampaignController::class, 'dataTable'])->name('campaign.datatable');
 
+        Route::get('tracking/live-location', [LocationController::class, 'liveLocation'])->name('tracking.live_location');
+        Route::get('tracking/location-history', [LocationController::class, 'locationHistory'])->name('tracking.location_history');
+        Route::get('tracking/user-history/{userId}/{date}', [LocationController::class, 'userLocationHistory'])->name('tracking.user_history');
+        Route::get('tracking/update-location', [LocationController::class, 'updateLocationGet']);
+        Route::post('tracking/update-location', [LocationController::class, 'updateLocation'])->name('tracking.update_location');
+        Route::get('tracking/initial-locations', [LocationController::class, 'initialLocations'])->name('tracking.initial_location');
+        Route::get('tracking/search-user', [LocationController::class, 'searchUser'])->name('tracking.search_user');
+        Route::post('tracking/set-offline', [LocationController::class, 'setOffline'])->name('tracking.set_offline');
+
         //Leave management
-        Route::resource('assign-task', AssignTaskController::class);
-        Route::get('assign-task-datatable', [AssignTaskController::class, 'dataTable'])->name('assign_task.datatable');
-        Route::post('change-task-status/{assign_task}', [AssignTaskController::class, 'changeStatus'])->name('assign-task.status');
-        Route::post('/assign-task/cost', [AssignTaskController::class, 'storeTaskCost'])->name('assign_task_cost.store');
+        Route::resource('task', TaskController::class);
+        Route::get('task-datatable', [TaskController::class, 'dataTable'])->name('task.datatable');
+        Route::get('task-details/{task}', [TaskController::class, 'details'])->name('task.details');
 
         //SR
         Route::resource('sr', SRController::class);
@@ -103,8 +119,16 @@ Route::middleware('checkDatabaseConnection')->group(function (){
 
         //Distribution Order
         Route::resource('farm-visit', FarmVisitController::class);
-        Route::get('sales-order-datatable', [SalesOrderController::class, 'dataTable'])->name('sales-order.datatable');
+        // Route::get('sales-order-datatable', [SalesOrderController::class, 'dataTable'])->name('sales-order.datatable');
 
+        //Requisition Order
+        Route::resource('requisition-order', controller: RequisitionOrderController::class);
+        Route::get('requisition-details/{requisitionOrder}', [RequisitionOrderController::class, 'requisitionDetails'])->name('requisition-order.details');
+        Route::get('requisition-order-datatable', [RequisitionOrderController::class, 'dataTable'])->name('requisition-order.datatable');
+        Route::post('requisition-order/approved/{requisitionOrder}', [RequisitionOrderController::class, 'requisitionApproved'])->name('requisition-order.approved');
+        Route::get('requisition-order/make-order/{requisitionOrder}', [RequisitionOrderController::class, 'requisitionMakeOrder'])->name('requisition-order.make_order');
+        Route::post('requisition-order/make-order/{requisitionOrder}', [RequisitionOrderController::class, 'requisitionMakeOrderPost']);
+        
         //Distribution Order
         Route::resource('sales-order', SalesOrderController::class);
         Route::get('sales-order-datatable', [SalesOrderController::class, 'dataTable'])->name('sales-order.datatable');
@@ -113,7 +137,8 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::get('customer-payment-sales-datatable', [SalesOrderController::class, 'customerPaymentsDataTable'])->name('client-payments.datatable');
 
         Route::get('sales-payment-details/{salePayment}', [SalesOrderController::class, 'salePaymentDetails'])->name('sales-order.details');
-        Route::get('sales-order-edit/{saleOrder}', [SalesOrderController::class, 'salesInvoice'])->name('sales-order.day_close');
+        Route::get('sales-order-invoice/{saleOrder}', [SalesOrderController::class, 'salesInvoice'])->name('sales-order.invoice');
+        Route::get('sales-order-edit/{saleOrder}', [SalesOrderController::class, 'salesInvoiceDayClose'])->name('sales-order.day_close');
         Route::post('sales-order-edit/{saleOrder}', [SalesOrderController::class, 'finalSalePost']);
 
         Route::post('sales-order-in-transit-post/{saleOrder}', [SalesOrderController::class, 'inTransitPost'])->name('sales-order.in_transit_post');
@@ -145,6 +170,7 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::get('get_distribution_product_info', [CommonController::class, 'getDistributionProductInfo'])->name('get_distribution_product_info');
         Route::get('get_collection_amount', [CommonController::class, 'getCollectionAmount'])->name('get_collection_amount');
         Route::get('/get-thanas/{districtId}', [CommonController::class, 'getThanasByDistrict'])->name('get.thanas');
+        Route::get('/get-districts/{divisionId}', [CommonController::class, 'getDistrictsByDivision'])->name('get.districts');
         Route::get('get-subcategories/{category}',[CommonController::class, 'getSubcategories'])->name('get.subcategories');
         Route::get('get-subcategories/{category}',[CommonController::class, 'getSubcategories'])->name('get.subcategories');
 
@@ -152,6 +178,7 @@ Route::middleware('checkDatabaseConnection')->group(function (){
 
     require __DIR__ . '/auth.php';
 });
+
 
 
 Route::get('my-sql-db-connection',[SettingsController::class,'mySqlDbConnection'])

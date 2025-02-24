@@ -56,12 +56,12 @@ class ClientController extends Controller
     public function create()
     {
         $srs = [];
-        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
             $srs = Client::where('type',2)->where('status',1)->get(); //type 2  for SR
         }else{
             $srs = Client::where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
         }
-        // dd($srs->id);
+        // dd();
         $districts = District::where('status',1)->get();
         return view('settings.client.create',compact('srs','districts'));
     }
@@ -87,12 +87,14 @@ class ClientController extends Controller
                     ->where('type',4)
             ],
             'sr' =>['required'],
+            'client_type' =>['required'],
             'district' =>['required'],
             'thana' =>['required'],
             'latitude' => 'required|string|max:255',
             'longitude' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
-            'opening_balance' => 'required|numeric|min:0',
+            'debit_balance' => 'nullable|numeric|min:0',
+            'opening_balance' => 'nullable|numeric|min:0',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 
@@ -113,8 +115,6 @@ class ClientController extends Controller
 
             $client = Client::create($validatedData);
 
-
-
             // Commit the transaction
             DB::commit();
 
@@ -124,7 +124,7 @@ class ClientController extends Controller
             // Roll back the transaction in case of an error
             DB::rollback();
             // Handle the error and redirect with an error message
-            return redirect()->route('client.create')
+            return redirect()->back()
                 ->withInput()
                 ->with('error', 'An error occurred while creating the Customer: '.$e->getMessage());
         }
@@ -141,11 +141,12 @@ class ClientController extends Controller
         try {
             // If the Client exists, display the edit view
             $srs = [];
-            if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+            if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
                 $srs = Client::where('type',2)->where('status',1)->get(); // 2 for SR
             }else{
                 $srs = Client::where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
             }
+            
             $districts = District::where('status',1)->get();
             return view('settings.client.edit', compact('client','srs','districts'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -180,12 +181,14 @@ class ClientController extends Controller
                     ->ignore($client)
             ],
             'sr' =>['required'],
+            'client_type' =>['required'],
             'district' =>['required'],
             'thana' =>['required'],
             'longitude' => 'nullable|string|max:255',
             'latitude' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255', // Make 'address' nullable
-            'opening_balance' => 'required|numeric|min:0',
+            'debit_balance' => 'nullable|numeric|min:0',
+            'opening_balance' => 'nullable|numeric|min:0',
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
 

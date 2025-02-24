@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Assign Task')
+@section('title', 'Task')
 @section('style')
     <style>
         .table td,
@@ -12,7 +12,7 @@
 @section('content')
 
     <!-- form start -->
-    <form enctype="multipart/form-data" action="{{ route('assign-task.store') }}"
+    <form enctype="multipart/form-data" action="{{ route('task.store') }}"
         class="form-horizontal" method="post">
         @csrf
         <div class="row">
@@ -21,16 +21,27 @@
                 <!-- jquery validation -->
                 <div class="card card-default">
                     <div class="card-header">
-                        <h3 class="card-title">Product Information </h3>
+                        <h3 class="card-title">Task Information </h3>
                     </div>
                     <div class="card-header">
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group {{ $errors->has('client') ? 'has-error' : '' }}">
-                                    <label for="client">Assign By <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="assign_by"
+                            <div class="col-md-6">
+                                <div class="form-group {{ $errors->has('task_user_name') ? 'has-error' : '' }}">
+                                    <label for="task_user_name">Task User <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="task_user_name"
                                         value="{{ auth()->user()->name ?? '' }}" readonly>
-                                    @error('client')
+                                    <input type="hidden" value="{{ auth()->user()->id }}" name="task_user">    
+                                    @error('task_user')
+                                        <span class="help-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group {{ $errors->has('date') ? 'has-error' : '' }}">
+                                    <label for="task_user">Date <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control date-picker" name="date"
+                                        value="{{ date('Y-m-d') }}" readonly>
+                                    @error('date')
                                         <span class="help-block">{{ $message }}</span>
                                     @enderror
                                 </div>
@@ -39,19 +50,15 @@
                     </div>
                     <div class="card-header">
                         <div class="row">
-
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="select_sr_doctor">SR/Doctor <span class="text-danger">*</span></label>
-                                    <select class="form-control select2" id="select_sr_doctor" name="select_sr_doctor">
-                                        <option value="">Search Name of SR/Doctor</option>
-                                        @foreach ($srs_doctors as $sr_doctor)
-                                            <option {{ old('select_sr_doctor') == $sr_doctor->id ? 'selected' : '' }} value="{{ $sr_doctor->id }}">{{$sr_doctor->name}} </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="add_task_details">Task Details<span
+                                            class="text-danger">*</span></label>
+                                    <textarea type="text" class="form-control" id="add_task_details"
+                                        placeholder="Task Details"></textarea>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="add_task_priority">Task Priority <span class="text-danger">*</span></label>
                                     <select class="form-control select2" id="add_task_priority">
@@ -62,15 +69,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="add_task_details">Task Details<span
-                                            class="text-danger">*</span></label>
-                                    <textarea type="text" class="form-control" id="add_task_details"
-                                        placeholder="Purchase Price"></textarea>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="add_task_date">Task Date <span class="text-danger">*</span></label>
                                     <input type="text" autocomplete="off" value="{{ old('add_task_date',date('d-m-Y')) }}" id="add_task_date" class="form-control date-picker" placeholder="Enter date">
@@ -93,9 +92,8 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center" width="5%">S/L</th>
-                                            <th class="text-center">SR/Doctor Name</th>
-                                            <th class="text-center">Task Priority</th>
                                             <th class="text-center">Task Details</th>
+                                            <th class="text-center">Task Priority</th>
                                             <th class="text-center">Task Date</th>
                                             <th class="text-center" width="5%"></th>
                                         </tr>
@@ -107,15 +105,14 @@
                                                     <td class="text-center">
                                                         <span class="sr-doctor-sl">{{ ++$key }}</span>
                                                     </td>
-                                                    <td class="text-left {{ $errors->has('sr_doctor_id.' . $loop->index) ? 'bg-gradient-danger' : '' }}">
-                                                        <span
-                                                            class="sr-doctor-name">{{ old('sr_doctor_name_val.' . $loop->index) }}</span>
-                                                        <input type="hidden" name="sr_doctor_name_val[]"
-                                                            value="{{ old('sr_doctor_name_val.' . $loop->index) }}"
-                                                            class="sr_doctor_name_val">
-                                                        <input type="hidden" name="sr_doctor_id[]"
-                                                            value="{{ old('sr_doctor_id.' . $loop->index) }}"
-                                                            class="sr_doctor_id">
+                                                    <td class="text-left">
+                                                        <div
+                                                            class="form-group mb-0  {{ $errors->has('task_details.' . $loop->index) ? 'has-error' : '' }}">
+                                                            <textarea type="texty"
+                                                                value="{{ old('task_details.' . $loop->index) }}"
+                                                                class="form-control text-left task_details"
+                                                                name="task_details[]"></textarea>
+                                                        </div>
                                                     </td>
 
                                                     <td class="text-right">
@@ -127,15 +124,7 @@
                                                             </select>
                                                         </div>
                                                     </td>
-                                                    <td class="text-left">
-                                                        <div
-                                                            class="form-group mb-0  {{ $errors->has('task_details.' . $loop->index) ? 'has-error' : '' }}">
-                                                            <textarea type="texty"
-                                                                value="{{ old('task_details.' . $loop->index) }}"
-                                                                class="form-control text-left task_details"
-                                                                name="task_details[]"></textarea>
-                                                        </div>
-                                                    </td>
+                                                    
                                                     <td class="text-left">
                                                         <div class="form-group mb-0">
                                                             <input type="text" autocomplete="off" value="{{ old('add_task_date',date('d-m-Y')) }}" name="task_date[]" class="form-control date-picker task_date" placeholder="Enter date">
@@ -171,9 +160,10 @@
                 <span class="sr-doctor-sl"></span>
             </td>
             <td class="text-left">
-                <span class="sr-doctor-name"></span>
-                <input type="hidden" name="sr_doctor_name_val[]" class="sr_doctor_name_val">
-                <input type="hidden" name="sr_doctor_id[]" class="sr_doctor_id">
+                <div class="form-group mb-0">
+                    <textarea type="text" class="form-control text-left task_details"
+                        name="task_details[]"> </textarea>
+                </div>
             </td>
             <td class="text-right">
                 <div class="form-group mb-0">
@@ -184,12 +174,7 @@
                     </select>
                 </div>
             </td>
-            <td class="text-left">
-                <div class="form-group mb-0">
-                    <textarea type="text" class="form-control text-left task_details"
-                        name="task_details[]"> </textarea>
-                </div>
-            </td>
+            
             <td class="text-left">
                 <div class="form-group mb-0">
                     <input type="text" autocomplete="off" value="{{ old('add_task_date',date('d-m-Y')) }}" name="task_date[]" class="form-control date-picker task_date" placeholder="Enter date">
@@ -230,18 +215,12 @@
 
 
             $('body').on('click', '#add_new_btn', function(e) {
-                let selectSRDoctorId = $('#select_sr_doctor').val();
-                let selectSRDoctorIdName = $("#select_sr_doctor option:selected").text();
                 let addTaskDetails = $('#add_task_details').val();
                 let addTaskPriority = $('#add_task_priority').val();
                 let addTaskDate = $('#add_task_date').val();  // Corrected here
 
-                if (selectSRDoctorId == '') {
-                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please, select SR Or Doctor!' });
-                    return false;
-                }
                 if (addTaskDetails == '') {
-                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please, type SR Or Doctor!' });
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please, type task details!' });
                     return false;
                 }
                 if (addTaskPriority == '') {
@@ -253,12 +232,7 @@
                     return false;
                 }
 
-                if ($.inArray(selectSRDoctorId, srDoctorIds) != -1) {
-                    Swal.fire({ icon: 'error', title: 'Oops...', text: selectSRDoctorIdName + ' already exists in the list.' });
-                    return false;
-                }
-
-                if (selectSRDoctorId && addTaskPriority && addTaskDetails && addTaskDate) {
+                if (addTaskPriority && addTaskDetails && addTaskDate) {
                     var addMoreSound = document.getElementById("add_more_sound");
                     addMoreSound.play();
                     var html = $('#sr_doctor-template').html();
@@ -266,20 +240,15 @@
                     $('#sr-doctor-name-container').prepend(itemHtml);
                     var item = $('.sr-doctor-name-item').first();
                     item.hide();
-                    item.find('.sr-doctor-name').text(selectSRDoctorIdName);
-                    item.find('.sr_doctor_name_val').val(selectSRDoctorIdName);
-                    item.find('.sr_doctor_id').val(selectSRDoctorId);
                     item.find('.task_details').val(addTaskDetails);
                     item.find('.task_priority').val(addTaskPriority);
                     item.find('.task_date').val(addTaskDate);  // Corrected here
-                    srDoctorIds.push(selectSRDoctorId);
                     item.show();
 
                     // ✅ Initialize Date Picker
                     initializeDatePicker();
 
                     calculate();
-                    $('#select_sr_doctor').val(null).trigger('change');
                     $('#add_task_details').val('');
                     $('#add_task_priority').val(null).trigger('change');
 
@@ -304,9 +273,6 @@
 
                 $(this).closest('.sr-doctor-name-item').remove();
                 calculate();
-                srDoctorIds = $.grep(srDoctorIds, function(value) {
-                    return value != sr_doctor_id;
-                });
             });
             $('body').on('keyup', 'input[type="number"]', function() {
                 calculate();

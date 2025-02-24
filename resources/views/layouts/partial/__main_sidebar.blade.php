@@ -28,13 +28,65 @@
                 <?php
                 $subMenu = ['user.index', 'user.create', 'user.edit'];
                 ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin']))
                     <li class="nav-item">
                         <a href="{{ route('user.index') }}"
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
                             <i class="nav-icon fa-solid fa-users-gear"></i>
                             <p>Users</p>
                         </a>
+                    </li>
+                @endif
+                <?php
+                $subMenu = ['divisional-user.index', 'divisional-user.create', 'divisional-user.edit'];
+                ?>
+                @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin']))
+                    <li class="nav-item">
+                        <a href="{{ route('divisional-user.index') }}"
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-users-gear"></i>
+                            <p>Divisional Head</p>
+                        </a>
+                    </li>
+                @endif
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin']))
+                    <?php
+                    $subMenu = ['tracking.live_location','tracking.location_history'];
+                    ?>
+                    <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
+                        <a href="#"
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-bullseye"></i>
+                            <p>
+                                Monitoring
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php
+                            $subSubMenu = ['tracking.live_location'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('tracking.live_location') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Live Location</p>
+                                </a>
+                            </li>
+                            <?php
+                            $subSubMenu = ['tracking.location_history'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('tracking.location_history') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Location History</p>
+                                </a>
+                            </li>
+                            
+                        </ul>
                     </li>
                 @endif
                 <?php
@@ -99,7 +151,7 @@
                 <?php
                 $subMenu = ['sr.index', 'sr.create', 'sr.edit', 'doctor.index', 'doctor.create', 'doctor.edit'];
                 ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin']))
                     <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                         <a href="#"
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
@@ -140,7 +192,7 @@
                 <?php
                 $subMenu = ['farm.index', 'farm.create', 'farm.edit', 'farm-visit.index', 'farm-visit.create', 'farm-visit.edit'];
                 ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Doctor']))
+                @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin', 'Doctor']))
                     <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                         <a href="#"
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
@@ -154,7 +206,7 @@
                             <?php
                             $subSubMenu = ['farm.index', 'farm.create', 'farm.edit'];
                             ?>
-                            @if (in_array(auth()->user()->role, ['Doctor', 'Admin', 'SuperAdmin']))
+                            @if (in_array(auth()->user()->role, ['Doctor', 'Admin','Divisional Admin', 'SuperAdmin']))
                                 <li class="nav-item">
                                     <a href="{{ route('farm.index') }}"
                                         class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
@@ -167,7 +219,7 @@
                             <?php
                             $subSubMenu = ['farm-visit.index', 'farm-visit.create', 'farm-visit.edit'];
                             ?>
-                            @if (in_array(auth()->user()->role, ['Doctor', 'Admin', 'SuperAdmin']))
+                            @if (in_array(auth()->user()->role, ['Doctor', 'Admin','Divisional Admin', 'SuperAdmin']))
                                 <li class="nav-item">
                                     <a href="{{ route('farm-visit.index') }}"
                                         class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
@@ -181,16 +233,21 @@
                     </li>
                 @endif
                 <?php
-                $subMenu = ['sales-order.index', 'sales-order.create', 'sales-order.edit', 'sales-order.details', 'sales-order.day_close', 'sales-order.customer_sale_details', 'sales-order.customer_sale_entry', 'sales-order.customer_damage_product_entry', 'sales-order.final_details', 'client-payments', 'sales-order.details', 'client.index', 'client.create', 'client.edit'];
+                $subMenu = [
+                    'sales-order.index', 'sales-order.create', 'sales-order.edit', 'sales-order.details', 'sales-order.day_close', 'sales-order.customer_sale_details', 'sales-order.customer_sale_entry', 
+                    'sales-order.customer_damage_product_entry', 'sales-order.final_details', 'client-payments', 'sales-order.details', 'client.index', 'client.create', 'client.edit',
+                    'requisition-order.index', 'requisition-order.create', 'requisition-order.edit', 'requisition-order.details', 'requisition-order.customer_sale_details', 'requisition-order.customer_sale_entry', 'requisition-order.final_details',
+                    'requisition-order.make_order','sales-order.invoice'
+                ];
                 ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'SR']))
+                @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin', 'SR']))
                     <li
-                        class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) && request('type') == 1 ? 'menu-open' : '' }}">
+                        class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                         <a href="#"
-                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) && request('type') == 1 ? 'active' : '' }}">
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
                             <i class="nav-icon fa-solid fa-shopping-cart"></i>
                             <p>
-                                SR Collection
+                                Order Collection
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
@@ -198,54 +255,63 @@
                             <?php
                             $subSubMenu = ['client.index', 'client.create', 'client.edit'];
                             ?>
-                            @if (in_array(auth()->user()->role, ['SR', 'Admin', 'SuperAdmin']))
+                            @if (in_array(auth()->user()->role, ['SR', 'Admin','Divisional Admin', 'SuperAdmin']))
                                 <li class="nav-item">
-                                    <a href="{{ route('client.index', ['type' => 1]) }}"
+                                    <a href="{{ route('client.index') }}"
                                         class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
                                         <i
                                             class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
                                         <p>Client List</p>
                                     </a>
                                 </li>
+                                <?php
+                                $subSubMenu = ['requisition-order.index', 'requisition-order.create', 'requisition-order.edit', 'requisition-order.details', 'requisition-order.customer_sale_details', 'requisition-order.customer_sale_entry', 'requisition-order.final_details'];
+                                ?>
+                                <li class="nav-item">
+                                    <a href="{{ route('requisition-order.index') }}"
+                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                        <i class="fa fa-history nav-icon"></i>
+                                        <p>Requisition Order</p>
+                                    </a>
+                                </li>
+                                <?php
+                                $subSubMenu = ['sales-order.create'];
+                                ?>
+                                {{-- <li class="nav-item">
+                                    <a href="{{ route('sales-order.create') }}"
+                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                        <i class="fa fa-plus nav-icon"></i>
+                                        <p>Order Create</p>
+                                    </a>
+                                </li> --}}
+                                <?php
+                                $subSubMenu = ['sales-order.index', 'sales-order.edit', 'sales-order.day_close', 'sales-order.customer_sale_details', 'sales-order.customer_sale_entry', 'sales-order.customer_damage_product_entry', 'sales-order.final_details', 'sales-order.invoice'];
+                                ?>
+                                <li class="nav-item">
+                                    <a href="{{ route('sales-order.index') }}"
+                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                        <i class="fa fa-history nav-icon"></i>
+                                        <p>Order List</p>
+                                    </a>
+                                </li>
+                                <?php
+                                $subSubMenu = ['client-payments', 'sales-order.details'];
+                                ?>
+                                <li class="nav-item">
+                                    <a href="{{ route('client-payments') }}"
+                                        class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                        <i class="fa fa-history nav-icon"></i>
+                                        <p>Client Payment</p>
+                                    </a>
+                                </li>
                             @endif
-                            <?php
-                            $subSubMenu = ['sales-order.create'];
-                            ?>
-                            <li class="nav-item">
-                                <a href="{{ route('sales-order.create', ['type' => 1]) }}"
-                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) && request('type') == 1 ? 'active' : '' }}">
-                                    <i class="fa fa-plus nav-icon"></i>
-                                    <p>SR Order Create</p>
-                                </a>
-                            </li>
-                            <?php
-                            $subSubMenu = ['sales-order.index', 'sales-order.edit', 'sales-order.day_close', 'sales-order.customer_sale_details', 'sales-order.customer_sale_entry', 'sales-order.customer_damage_product_entry', 'sales-order.final_details', ''];
-                            ?>
-                            <li class="nav-item">
-                                <a href="{{ route('sales-order.index', ['type' => 1]) }}"
-                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) && request('type') == 1 ? 'active' : '' }}">
-                                    <i class="fa fa-history nav-icon"></i>
-                                    <p>SR Order List</p>
-                                </a>
-                            </li>
-                            <?php
-                            $subSubMenu = ['client-payments', 'sales-order.details'];
-                            ?>
-                            <li class="nav-item">
-                                <a href="{{ route('client-payments', ['type' => 1]) }}"
-                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) && request('type') == 1 ? 'active' : '' }}">
-                                    <i class="fa fa-history nav-icon"></i>
-                                    <p>Client Payment</p>
-                                </a>
-                            </li>
-
                         </ul>
                     </li>
                 @endif
                 <?php
                 $subMenu = ['campaign.index', 'campaign.create', 'campaign.edit', 'campaign.show'];
                 ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                {{-- @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin'])) --}}
                     <li class="nav-item">
                         <a href="{{ route('campaign.index') }}"
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
@@ -253,11 +319,11 @@
                             <p>Campaign</p>
                         </a>
                     </li>
-                @endif
+                {{-- @endif --}}
                 <?php
                 $subMenu = ['leave-types.index', 'leave-types.create', 'leave-types.edit', 'leave.index', 'leave.create', 'leave.edit'];
                 ?>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'SR']))
+                @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin', 'SR']))
                     <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                         <a href="#"
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
@@ -294,7 +360,7 @@
                     </li>
                 @endif
                 <?php
-                $subMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
+                $subMenu = ['task.index', 'task.create', 'task.edit','task.details'];
                 ?>
                 <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
                     <a href="#"
@@ -307,10 +373,10 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <?php
-                        $subSubMenu = ['assign-task.index', 'assign-task.create', 'assign-task.edit'];
+                        $subSubMenu = ['task.index', 'task.create', 'task.edit','task.details'];
                         ?>
                         <li class="nav-item">
-                            <a href="{{ route('assign-task.index') }}"
+                            <a href="{{ route('task.index') }}"
                                 class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
                                 <i
                                     class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
@@ -319,7 +385,7 @@
                         </li>
                     </ul>
                 </li>
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'SR']))
+                @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin', 'SR']))
                     <?php
                     $subMenu = ['report.sales_report', 'sales_report_tracking'];
                     ?>
@@ -341,15 +407,15 @@
                                     <p>Sales Report</p>
                                 </a>
                             </li>
-                            @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
-                                <li class="nav-item">
+                            @if (in_array(auth()->user()->role, ['Admin','Divisional Admin', 'SuperAdmin']))
+                                {{-- <li class="nav-item">
                                     <a href="{{ route('sales_report_tracking') }}"
                                         class="nav-link {{ Route::currentRouteName() == 'sales_report_tracking' ? 'active' : '' }}">
                                         <i
                                             class="far  {{ Route::currentRouteName() == 'sales_report_tracking' ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
                                         <p>Tacking Report</p>
                                     </a>
-                                </li>
+                                </li> --}}
                             @endif
                         </ul>
                     </li>

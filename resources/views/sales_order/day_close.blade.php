@@ -46,13 +46,13 @@
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    @if (request('status') != 1 && request('type') == 1)
+                    @if (request('status') != 1)
                         @if(in_array($saleOrder->status, [2]) && in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
-                        <a href="{{ route('sales-order.day_close', ['saleOrder' => $saleOrder->id, 'status' => 1, 'type' => 1]) }}"
+                        <a href="{{ route('sales-order.day_close', ['saleOrder' => $saleOrder->id, 'status' => 1]) }}"
                             class="btn btn-success bg-gradient-success btn-sm">Edit <i class="fa fa-edit"></i></a>
                         @endif
                     @else
-                        <a href="{{ route('sales-order.day_close', ['saleOrder' => $saleOrder->id, 'type' => 1]) }}"
+                        <a href="{{ route('sales-order.day_close', ['saleOrder' => $saleOrder->id]) }}"
                             class="btn btn-success bg-gradient-success btn-sm">Edit Close <i class="fa fa-edit"></i></a>
                     @endif
                     <a href="#" role="button" onclick="getprintChallan('printAreaChallan')"
@@ -62,7 +62,7 @@
                 <div class="card-body">
                     <div class="table-responsive" id="printAreaChallan">
                         <form
-                            action="{{ route('sales-order.day_close', ['saleOrder' => $saleOrder->id, 'type' => request('type')]) }}"
+                            action="{{ route('sales-order.day_close', ['saleOrder' => $saleOrder->id]) }}"
                             method="post">
                             @csrf
                             <div class="row" style="border-bottom: 1.5px solid #000;">

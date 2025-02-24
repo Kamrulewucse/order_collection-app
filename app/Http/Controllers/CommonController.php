@@ -7,6 +7,7 @@ use App\Models\AccountHead;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\DistributionOrderItem;
+use App\Models\District;
 use App\Models\Floor;
 use App\Models\Guest;
 use App\Models\GuestExpenseLog;
@@ -323,6 +324,12 @@ class CommonController extends Controller
         // get thanas
         $thanas = Thana::where('status',1)->where('district_id', $districtId)->get();
         return response()->json($thanas);
+    }
+    public function getDistrictsByDivision($divisionId)
+    {
+        // get thanas
+        $districts = District::where('status',1)->where('division_id', $divisionId)->get();
+        return response()->json($districts);
     }
 
     public function getSubcategories($categoryId)

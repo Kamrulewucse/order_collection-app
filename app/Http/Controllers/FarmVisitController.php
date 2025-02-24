@@ -18,7 +18,7 @@ class FarmVisitController extends Controller
      */
     public function index()
     {
-        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
             $farmVisits = FarmVisit::with('doctor','farm')->get();
         }else{
             $farmVisits = FarmVisit::with('doctor','farm')->where('doctor_id',auth()->user()->client_id)->get();
@@ -56,7 +56,7 @@ class FarmVisitController extends Controller
     public function create()
     {
         $doctors = [];
-        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+        if(in_array(auth()->user()->role, ['Admin', 'Divisional Admin', 'SuperAdmin'])){
             $doctors = Client::where('status', 1)->where('type', 3)->get(); //type=3 is Doctor
         }else{
             $doctors = Client::where('status', 1)->where('type',3)->where('id',auth()->user()->client_id)->first(); //type=3 is Doctor

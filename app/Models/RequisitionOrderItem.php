@@ -6,13 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AssignTask extends Model
+class RequisitionOrderItem extends Model
 {
     use HasFactory,SoftDeletes;
     protected $guarded = [];
-
-    public function srOrDoctor()
+    public function product()
     {
-        return $this->belongsTo(Client::class,'sr_doctor_id','id');
+        return $this->belongsTo(Product::class);
+    }
+    public function saleOrder()
+    {
+        return $this->belongsTo(SaleOrder::class);
     }
 }

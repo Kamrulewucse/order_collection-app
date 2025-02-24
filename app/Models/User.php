@@ -27,6 +27,9 @@ class User extends Authenticatable
         'status',
         'theme_mode',
         'password',
+        'is_online',
+        'latest_latitude',
+        'latest_longitude',
     ];
 
     /**
@@ -48,6 +51,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
 
+    public function latestLocation()
+    {
+        return $this->hasOne(Location::class)->latestOfMany();
+    }
+    public function client(){
+        return $this->belongsTo(Client::class);
+    }
 
 }

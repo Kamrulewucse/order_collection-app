@@ -14,14 +14,14 @@
                 <form enctype="multipart/form-data" action="{{ route('client.store',['type' => 1]) }}" class="form-horizontal" method="post">
                     @csrf
                     <div class="card-body">
-                        @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin']))
+                        @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin','Divisional Admin']))
                         <div class="form-group row {{ $errors->has('sr') ? 'has-error' :'' }}">
                             <label for="sr" class="col-sm-2 col-form-label">SR Name<span class="text-danger">*</span></label>
                             <div class="col-sm-10">
                                 <select name="sr" id="sr" class="form-control select2">
                                     <option value="">Select SR</option>
                                     @foreach($srs as $sr)
-                                    <option {{ old('sr') == $sr->id ? 'selected' : '' }} value="{{ $sr->id }}">{{ $sr->name }}</option>
+                                    <option {{ old('sr') == $sr->id ? 'selected' : '' }} value="{{ $sr->id }}" data-district_id="{{ $sr->district_id }}">{{ $sr->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('sr')
@@ -46,6 +46,28 @@
                             <div class="col-sm-10">
                                 <input type="text" value="{{ old('name') }}" name="name" class="form-control" id="name" placeholder="Enter Name">
                                 @error('name')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group row {{ $errors->has('client_type') ? 'has-error' :'' }}">
+                            <label for="client_type" class="col-sm-2 col-form-label">Client Type<span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select name="client_type" id="client_type" class="form-control select2">
+                                    <option value="">Select Type</option>
+                                    <option value="Credit" {{ old('client_type') == 'Credit'?'selected':'' }}>Credit Client</option>
+                                    <option value="Debit" {{ old('client_type') == 'Debit'?'selected':'' }}>Debit Client</option>
+                                </select>
+                                @error('client_type')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group row {{ $errors->has('debit_balance') ? 'has-error' :'' }}" id="debit_balance_area">
+                            <label for="debit_balance" class="col-sm-2 col-form-label">Debit Balance </label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ old('debit_balance',0) }}" name="debit_balance" class="form-control" id="debit_balance" placeholder="Enter Debit Balance">
+                                @error('debit_balance')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -75,11 +97,16 @@
                                 <select name="district" id="district" class="form-control select2">
                                     <option value="">Select District</option>
                                     @foreach($districts as $district)
-                                    <option {{ old('district') == $district->id ? 'selected' : '' }} value="{{ $district->id }}">{{ $district->name_eng }}</option>
+                                        @if (auth()->user()->role == 'SR')
+                                            <option {{ old('district',auth()->user()->client->district_id) == $district->id ? 'selected' : '' }} value="{{ $district->id }}">{{ $district->name_eng }}</option>
+                                        @else
+                                            <option {{ old('district') == $district->id ? 'selected' : '' }} value="{{ $district->id }}">{{ $district->name_eng }}</option>
+                                        @endif
+                                        
                                     @endforeach
                                 </select>
                                 @error('district')
-                                <span class="help-block">{{ $message }}</span>
+                                    <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -90,7 +117,7 @@
                                     <option value="">Select Thana</option>
                                 </select>
                                 @error('thana')
-                                <span class="help-block">{{ $message }}</span>
+                                    <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -112,7 +139,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('opening_balance') ? 'has-error' :'' }}">
+                        {{-- <div class="form-group row {{ $errors->has('opening_balance') ? 'has-error' :'' }}">
                             <label for="opening_balance" class="col-sm-2 col-form-label">Opening Balance <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
                                 <input type="text" value="{{ old('opening_balance',0) }}" name="opening_balance" class="form-control" id="opening_balance" placeholder="Enter Opening Balance">
@@ -120,7 +147,7 @@
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="form-group row {{ $errors->has('address') ? 'has-error' :'' }}">
                             <label for="address" class="col-sm-2 col-form-label">Address</label>
                             <div class="col-sm-10">
@@ -211,6 +238,22 @@
                     const districtId = $(this).val();
                     loadSubcategories(districtId);
                 });
+                $('#district').trigger('change');
+
+                $('#sr').change(function () {
+                    const srDistrictId = $(this).find('option:selected').data('district_id');
+                    
+                    $('#district').val(srDistrictId).change();
+                });
+                $('#client_type').change(function(){
+                    let client_type = $(this).val();
+                    if(client_type == 'Debit'){
+                        $('#debit_balance_area').show();
+                    }else{
+                        $('#debit_balance_area').hide();
+                    }
+                });
+                $('#client_type').trigger('change');
             });
         })
     </script>

@@ -15,6 +15,7 @@
                             <tr>
                                 <th>S/L</th>
                                 <th>Name</th>
+                                <th>Divisional Head</th>
                                 <th>Mobile No.</th>
                                 <th>Email</th>
                                 <th>District</th>
@@ -46,6 +47,7 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
+                    {data: 'divisional_admin', name: 'divisional_admin'},
                     {data: 'mobile_no', name: 'mobile_no'},
                     {data: 'email', name: 'email'},
                     {data: 'district_name', name: 'district.name_eng'},

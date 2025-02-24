@@ -26,7 +26,7 @@ class DashboardController extends Controller
                 $startDate = date('Y-m-d');
                 $endDate = date('Y-m-d');
             }
-            if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])) {
+            if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])) {
 
                 $totals = SaleOrder::whereBetween('date', [$startDate, $endDate])
                     ->selectRaw('SUM(total) as total_sales, SUM(due) as total_dues, SUM(paid) as total_paids')

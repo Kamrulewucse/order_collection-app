@@ -15,13 +15,15 @@
                             <tr>
                                 <th>S/L</th>
                                 <th>Name</th>
+                                <th>Client Type</th>
                                 <th>Shop Name</th>
                                 <th>Mobile No.</th>
                                 <th>SR</th>
                                 <th>District</th>
                                 <th>Thana</th>
                                 <th>Address</th>
-                                <th>Opening Balance</th>
+                                <th>Credit Balance</th>
+                                <th>Debit Balance</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -48,6 +50,7 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
+                    {data: 'client_type', name: 'client_type'},
                     {data: 'shop_name', name: 'shop_name'},
                     {data: 'mobile_no', name: 'mobile_no'},
                     {data: 'sr_name', name: 'sr.name'},
@@ -55,8 +58,17 @@
                     {data: 'thana_name', name: 'thana.name_eng'},
                     {data: 'address', name: 'address'},
                     {
-                        data: 'opening_balance',
-                        name: 'opening_balance',
+                        data: 'balance',
+                        name: 'balance',
+                        render: function (data, type, row) {
+                            // Format the opening_balance as a number with commas and 2 decimal places
+                            return parseFloat(data).toLocaleString(undefined, {minimumFractionDigits: 2});
+
+                        }
+                    },
+                    {
+                        data: 'debit_balance',
+                        name: 'debit_balance',
                         render: function (data, type, row) {
                             // Format the opening_balance as a number with commas and 2 decimal places
                             return parseFloat(data).toLocaleString(undefined, {minimumFractionDigits: 2});

@@ -22,9 +22,8 @@ class SalesOrderController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->type == 1) {
-            $pageTitle = 'Sales Orders';
-        }
+        $pageTitle = 'Sales Orders';
+
         $srs = Client::where('type',2)->get(); //here type=2 for SR
         return view('sales_order.index', compact(
             'pageTitle',
@@ -34,11 +33,10 @@ class SalesOrderController extends Controller
     public function dataTable()
     {
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
-            $query = SaleOrder::with('sr','client')->where('type', \request('type'));
+            $query = SaleOrder::with('sr','client');
         }else{
-            $query = SaleOrder::with('sr','client')->where('sr_id',auth()->user()->client_id)->where('type', \request('type'));
+            $query = SaleOrder::with('sr','client')->where('sr_id',auth()->user()->client_id);
         }
-
 
         if (request()->has('start_date') && request('end_date') != '') {
             $query->whereBetween('date', [Carbon::parse(request('start_date'))->format('Y-m-d'), Carbon::parse(request('end_date'))->format('Y-m-d')]);
@@ -55,12 +53,7 @@ class SalesOrderController extends Controller
                     if ($saleOrder->status == 1) {
                         $icon = '<i class="fa fa-plus"></i>';
                     }
-                    $btn .= ' <a  href="' . route('sales-order.day_close', ['saleOrder' => $saleOrder->id, 'type' => $saleOrder->type]) . '" class="dropdown-item">' . $icon . ' Invoice</a>';
-
-                    }
-
-                if ($saleOrder->status == 1 && in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])) {
-                    $btn .= ' <a  data-id="' . $saleOrder->id . '" role="button" class="dropdown-item in-transit"><i class="fa fa-info-circle"></i> In Transit</a>';
+                    $btn .= ' <a  href="' . route('sales-order.invoice', ['saleOrder' => $saleOrder->id]) . '" class="dropdown-item">' . $icon . ' Invoice</a>';
                 }
                 return dropdownMenuContainer($btn);
             })
@@ -69,6 +62,9 @@ class SalesOrderController extends Controller
             })
             ->addColumn('client_name', function (SaleOrder $saleOrder) {
                 return $saleOrder->client->name ?? '';
+            })
+            ->addColumn('client_type', function (SaleOrder $saleOrder) {
+                return $saleOrder->client->client_type ?? '';
             })
             ->addColumn('status', function (SaleOrder $saleOrder) {
                 if ($saleOrder->status == 1) {
@@ -101,10 +97,7 @@ class SalesOrderController extends Controller
 
         $products = Product::where('status', 1)->get();
 
-
-        if ($request->type == 1) {
-            $pageTitle = 'SR Order Create';
-        }
+        $pageTitle = 'Order Create';
 
         return view('sales_order.create', compact(
             'srs',
@@ -222,22 +215,34 @@ class SalesOrderController extends Controller
             DB::commit();
 
             // Redirect to the index page with a success message
-            return redirect()->route('sales-order.day_close', ['saleOrder' => $saleOrder->id, 'type' => $request->type])->with('success', 'Distribution sales created successfully');
+            return redirect()->route('sales-order.day_close', ['saleOrder' => $saleOrder->id,'status'=>$saleOrder->status])->with('success', 'Distribution sales created successfully');
         } catch (\Exception $e) {
             // Roll back the transaction in case of an error
             DB::rollback();
 
             // Handle the error and redirect with an error message
-            return redirect()->route('sales-order.create', ['type' => $request->type, 'company' => $request->company])->withInput()->with('error', $e->getMessage());
+            return redirect()->route('sales-order.create', ['company' => $request->company])->withInput()->with('error', $e->getMessage());
         }
     }
 
     public function salesInvoice(SaleOrder $saleOrder, Request $request)
     {
         $saleOrder->load('saleOrderItems');
-        if ($saleOrder->type != 1) {
-            abort('404');
-        }
+        // dd('hi');
+        $products = Product::whereIn('id', $saleOrder->saleOrderItems->pluck('product_id'))->get();
+        $clients = Client::where('type',4)->get();
+        $pageTitle = 'SR Sales Invoice';
+
+        return view('sales_order.order_details', compact(
+            'saleOrder',
+            'pageTitle',
+            'products',
+            'clients'
+        ));
+    }
+    public function salesInvoiceDayClose(SaleOrder $saleOrder, Request $request)
+    {
+        $saleOrder->load('saleOrderItems');
         // dd('hi');
         $products = Product::whereIn('id', $saleOrder->saleOrderItems->pluck('product_id'))->get();
         $clients = Client::where('type',4)->get();
@@ -330,7 +335,7 @@ class SalesOrderController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('sales-order.day_close', ['saleOrder' => $saleOrder->id, 'type' => $saleOrder->type])
+                ->route('sales-order.day_close', ['saleOrder' => $saleOrder->id])
                 ->with('message', 'Sale order confirm successfully');
         } catch (\Exception $exception) {
             DB::rollBack();
@@ -461,6 +466,7 @@ class SalesOrderController extends Controller
             $srs = Client::where('type', 2)->get(); //type=2 for SR
         }else{
             $clients = Client::where('type', 4)->where('sr_id',auth()->user()->client_id)->get(); //type=4 for client
+            $srs = Client::where('type', 2)->where('id',auth()->user()->client_id)->get();
         }
         return view('sales_order.customer_payments', compact(
             'clients','srs'

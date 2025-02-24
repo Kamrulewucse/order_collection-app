@@ -4,9 +4,9 @@
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
-                <div class="card-header">
+                {{-- <div class="card-header">
                     <a href="{{ route('sales-order.create',['type'=>request('type')]) }}" class="btn btn-primary bg-gradient-primary btn-sm">Create New <i class="fa fa-plus"></i></a>
-                </div>
+                </div> --}}
                 <div class="card-header">
                     <div class="row">
                         <div class="col-12 col-md-3">
@@ -59,6 +59,7 @@
                                 <th class="text-center">Date</th>
                                 <th class="text-center">SR</th>
                                 <th class="text-center">Client</th>
+                                <th class="text-center">Client Type</th>
                                 <th class="text-center">Total</th>
                                 <th class="text-center">Paid</th>
                                 <th class="text-center">Due</th>
@@ -69,7 +70,7 @@
                             </thead>
                             <tfoot>
                             <tr>
-                                <th colspan="5" class="text-center">Total</th>
+                                <th colspan="6" class="text-center">Total</th>
                                 <th class="text-right"></th>
                                 <th class="text-right"></th>
                                 <th class="text-right"></th>
@@ -140,7 +141,6 @@
                 ajax: {
                     url: "{{ route('sales-order.datatable') }}",
                     data: function (d) {
-                        d.type = '{{ request('type')}}'
                         d.sr = $("#sr").val()
                         d.start_date = $("#start_date").val()
                         d.end_date = $("#end_date").val()
@@ -155,13 +155,12 @@
                     {data: 'date', name: 'date'},
                     {data: 'sr_name', name: 'sr.name'},
                     {data: 'client_name', name: 'client.name'},
+                    {data: 'client_type', name: 'client.client_type'},
                     {data: 'total', name: 'total'},
                     {data: 'paid', name: 'paid'},
                     {data: 'due', name: 'due'},
                     {data: 'notes', name: 'notes'},
-                        @if(request('type') == 1)
-                             {data: 'status', name: 'status',className:'text-center'},
-                        @endif
+                    {data: 'status', name: 'status',className:'text-center'},
                     {data: 'action', name: 'action', orderable: false},
                 ],
                 order: [[0, 'desc']],
@@ -180,22 +179,22 @@
                    };
 
                 //    // Total over this page for each column
-                   var pageTotalTotal = api.column(5, { page: 'current' }).data().reduce(function (a, b) {
+                   var pageTotalTotal = api.column(6, { page: 'current' }).data().reduce(function (a, b) {
                        return intVal(a) + intVal(b);
                    }, 0);
 
-                   var pageTotalPaid = api.column(6, { page: 'current' }).data().reduce(function (a, b) {
+                   var pageTotalPaid = api.column(7, { page: 'current' }).data().reduce(function (a, b) {
                        return intVal(a) + intVal(b);
                    }, 0);
 
-                   var pageTotalDue = api.column(7, { page: 'current' }).data().reduce(function (a, b) {
+                   var pageTotalDue = api.column(8, { page: 'current' }).data().reduce(function (a, b) {
                        return intVal(a) + intVal(b);
                    }, 0);
 
                    // Update footer
-                   $(api.column(5).footer()).html(jsNumberFormat(pageTotalTotal.toFixed(2)));
-                   $(api.column(6).footer()).html(jsNumberFormat(pageTotalPaid.toFixed(2)));
-                   $(api.column(7).footer()).html(jsNumberFormat(pageTotalDue.toFixed(2)));
+                   $(api.column(6).footer()).html(jsNumberFormat(pageTotalTotal.toFixed(2)));
+                   $(api.column(7).footer()).html(jsNumberFormat(pageTotalPaid.toFixed(2)));
+                   $(api.column(8).footer()).html(jsNumberFormat(pageTotalDue.toFixed(2)));
                }
             });
             $('#start_date,#end_date,#search_btn,#sr').change(function () {
