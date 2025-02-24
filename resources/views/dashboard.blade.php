@@ -153,16 +153,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12">
-            <div class="card card-default">
-                <div class="card-body">
-                    <div id="map" style="height: 50vh;"></div>
-                </div>
-                <!-- /.card-body -->
-            </div>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header border-0">
@@ -270,6 +260,16 @@
                     <span class="info-box-number" id="total_collection">{{ number_format($totalDuePayment, 2) }}</span>
                 </div>
             </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-body">
+                    <div id="map" style="height: 50vh;"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
         </div>
     </div>
     {{-- <div class="row">

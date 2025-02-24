@@ -34,6 +34,8 @@ class SalesOrderController extends Controller
     {
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
             $query = SaleOrder::with('sr','client');
+        }elseif(in_array(auth()->user()->role, ['Divisional Admin'])){
+            $query = SaleOrder::with('sr','client')->where('divisional_user_id',auth()->user()->divisional_user_id);
         }else{
             $query = SaleOrder::with('sr','client')->where('sr_id',auth()->user()->client_id);
         }

@@ -108,6 +108,8 @@
                                         <td class="text-right">
                                             {{ number_format($item->damage_quantity) }}
                                             <input type="hidden" name="product_id[]" value="{{ $item->product_id }}">
+                                            <input type="hidden" name="damage_quantity[]" class="damage_quantity"
+                                                value="{{ $item->damage_quantity }}">
                                             <input type="hidden" name="sr_sale_quantity[]" class="sr_sale_quantity"
                                                 value="{{ $item->sr_sale_quantity }}">
                                             <input type="hidden" name="selling_unit_price[]" class="selling_unit_price"

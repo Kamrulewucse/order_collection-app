@@ -76,7 +76,7 @@
                             <div class="col-4">
                                 <h5 class="text-center m-0">REQUISITION NO. {{ $requisitionOrder->order_no }}</h5>
                                 <h6 class="text-center m-0">Client: {{ $requisitionOrder->client->name }}</h6>
-                                <h6 class="text-center m-0">Client Type: {{ $saleOrder->client->client_type }}</h6>
+                                <h6 class="text-center m-0">Client Type: {{ $requisitionOrder->client->client_type }}</h6>
                             </div>
                             <div class="col-4">
                                 <h5 class="text-center m-0">DATE:

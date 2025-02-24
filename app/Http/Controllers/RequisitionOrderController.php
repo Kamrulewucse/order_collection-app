@@ -37,8 +37,10 @@ class RequisitionOrderController extends Controller
     }
     public function dataTable()
     {
-        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
             $query = RequisitionOrder::with('sr','client');
+        }elseif(in_array(auth()->user()->role, ['Divisional Admin'])){
+            $query = RequisitionOrder::with('sr','client')->where('divisional_user_id',auth()->user()->divisional_user_id);
         }else{
             $query = RequisitionOrder::with('sr','client')->where('sr_id',auth()->user()->client_id);
         }
@@ -64,7 +66,7 @@ class RequisitionOrderController extends Controller
                 if ($requisitionOrder->status == 1 && $requisitionOrder->d_status == 1 && $requisitionOrder->h_status != 1 && auth()->user()->role == 'Admin') {
                     $btn .= ' <a  data-id="' . $requisitionOrder->id . '" role="button" class="dropdown-item approved"><i class="fa fa-info-circle"></i> Approved</a>';
                 }
-                if($requisitionOrder->status == 1 && $requisitionOrder->d_status == 1 && $requisitionOrder->h_status == 1 && auth()->user()->role == 'SR'){
+                if($requisitionOrder->status == 1 && $requisitionOrder->d_status == 1 && $requisitionOrder->h_status == 1 && auth()->user()->role == 'SR' && $requisitionOrder->order_status == 0){
                     $btn .= ' <a  href="'. route('requisition-order.make_order',['requisitionOrder'=>$requisitionOrder->id]) .' " class="dropdown-item"><i class="fa fa-info-circle"></i> Make Order</a>';
                 }
                 return dropdownMenuContainer($btn);
@@ -380,8 +382,8 @@ class RequisitionOrderController extends Controller
                 ];
 
                 $location = Location::where('user_id', $user->id)
-                ->where('date', $currentDate)
-                ->first();
+                    ->where('date', $currentDate)
+                    ->first();
 
                 $existingHistory = $location ? json_decode($location->history, true) : [];
                 $existingHistory[] = $newPoint;
@@ -439,6 +441,7 @@ class RequisitionOrderController extends Controller
                 // $inventoryLog->date = Carbon::parse($request->date);
                 // $inventoryLog->save();
             }
+            // dd($total);
             $saleOrder->total = $total;
             if($client->client_type == 'Credit'){
                 $saleOrder->paid = $total;
@@ -454,6 +457,9 @@ class RequisitionOrderController extends Controller
             $saleOrder->costing_total = $costingTotal;
             $saleOrder->status = 3;
             $saleOrder->save();
+
+            $requisitionOrder->order_status = 1;
+            $requisitionOrder->save();
 
             // Commit the transaction
             DB::commit();
