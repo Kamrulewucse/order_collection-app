@@ -47,7 +47,7 @@
                                 <select class="form-control select2" name="user">
                                     <option value="">Select Option</option>
                                     @foreach ($admins as $admin)
-                                        <option value="{{ $admin->id }}" {{ old('user',$divisionalUser->user_id) == $admin->id?'selected':'' }}>{{ $admin->name }}</option>
+                                        <option value="{{ $admin->id }}" {{ old('user',$divisionalUser->parent_id) == $admin->id?'selected':'' }}>{{ $admin->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('user')
@@ -143,34 +143,7 @@
 @section('script')
     <script>
         $(document).ready(function() {
-            function updateParentCheckboxes() {
-                $('.parent-checkbox').each(function() {
-                    var $this = $(this);
-                    var $childCheckboxes = $this.closest('td').find('.child-checkbox, .grandchild-checkbox, .great-grandchild-checkbox');
-                    var checkedChildCheckboxes = $childCheckboxes.filter(':checked');
-
-                    if (checkedChildCheckboxes.length > 0) {
-                        $this.prop('checked', true);
-                    }
-                });
-            }
-
-            $('.check-all-checkbox').change(function() {
-                var isChecked = $(this).prop('checked');
-                $('.parent-checkbox, .child-checkbox, .grandchild-checkbox, .great-grandchild-checkbox').prop('checked', isChecked);
-                updateParentCheckboxes();
-            });
-
-            $('.child-checkbox, .grandchild-checkbox, .great-grandchild-checkbox').change(function() {
-                updateParentCheckboxes();
-            });
-
-            $('.parent-checkbox').change(function() {
-                var $this = $(this);
-                $this.siblings('ul').find('.child-checkbox, .grandchild-checkbox, .great-grandchild-checkbox').prop('checked', this.checked);
-            });
-
-            updateParentCheckboxes();
+           
         });
     </script>
 @endsection

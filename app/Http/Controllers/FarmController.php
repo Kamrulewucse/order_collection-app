@@ -22,10 +22,10 @@ class FarmController extends Controller
     }
     public function dataTable()
     {
-        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
-            $query = Client::with('doctor','district','thana')->where('type',5); //Farm
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+            $query = Client::with('district','thana')->where('type','Farm'); //Farm
         }else{
-            $query = Client::with('doctor','district','thana')->where('type',5)->where('doctor_id',auth()->user()->client_id); //type 5 for Farm
+            $query = Client::with('district','thana')->where('type','Farm')->where('doctor_id',auth()->user()->client_id); //type 5 for Farm
         }
         return DataTables::eloquent($query)
             ->addIndexColumn()
@@ -36,7 +36,7 @@ class FarmController extends Controller
                 return $btn;
             })
             ->addColumn('doctor_name', function(Client $farm) {
-                return $farm->doctor->name ?? '';
+                return $farm->parent->name ?? '';
             })
             ->addColumn('district_name', function(Client $farm) {
                 return $farm->district->name_eng ?? '';
@@ -56,9 +56,9 @@ class FarmController extends Controller
     {
         $doctors = [];
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
-            $doctors = Client::where('type',3)->where('status',1)->get(); //type 3 for Doctor
+            $doctors = Client::where('type','Farm')->where('status',1)->get(); //type 3 for Doctor
         }else{
-            $doctors = Client::where('type',3)->where('id',auth()->user()->client_id)->first(); //type 3 for doctor
+            $doctors = Client::where('type','Farm')->where('id',auth()->user()->client_id)->first(); //type 3 for doctor
         }
         $districts = District::where('status',1)->get();
         return view('settings.farm.create',compact('doctors','districts'));
@@ -73,8 +73,6 @@ class FarmController extends Controller
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                ->where('type',5)
             ],
             'shop_name' =>[
                 'required','max:255',
@@ -82,7 +80,7 @@ class FarmController extends Controller
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',5)
+                    ->where('type','Farm')
             ],
             'doctor' =>['required'],
             'district' =>['required'],
@@ -99,8 +97,8 @@ class FarmController extends Controller
         try {
             $location_address = getLocationName($request->latitude, $request->longitude);
             // Create a new Client record in the database
-            $validatedData['type'] = 5;
-            $validatedData['doctor_id'] = $validatedData['doctor'];
+            $validatedData['type'] = 'Farm';
+            $validatedData['parent_id'] = $validatedData['doctor'];
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
             $validatedData['location_address'] = $location_address;
@@ -142,16 +140,16 @@ class FarmController extends Controller
      */
     public function edit(Client $farm)
     {
-        if ($farm->type != 5) {
+        if ($farm->type != 'Farm') {
             abort(404);
         }
 
         try {
             $doctors = [];
             if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
-                $doctors = Client::where('type',3)->where('status',1)->get(); //type 3 for Doctor
+                $doctors = Client::where('type','Doctor')->where('status',1)->get(); //type 3 for Doctor
             }else{
-                $doctors = Client::where('type',3)->where('id',auth()->user()->client_id)->first(); //type 3 for doctor
+                $doctors = Client::where('type','Doctor')->where('id',auth()->user()->client_id)->first(); //type 3 for doctor
             }
 
             $districts = District::where('status',1)->get();
@@ -167,16 +165,13 @@ class FarmController extends Controller
      */
     public function update(Request $request, Client $farm)
     {
-        if ($farm->type != 5) {
+        if ($farm->type != 'Farm') {
             abort(404);
         }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                    ->where('type',5)
-                    ->ignore($farm)
             ],
             'shop_name' =>[
                 'required','max:255',
@@ -184,7 +179,7 @@ class FarmController extends Controller
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',5)
+                    ->where('type','Farm')
                     ->ignore($farm)
             ],
             'doctor' =>['required'],
@@ -203,8 +198,8 @@ class FarmController extends Controller
             //Get addresss from latitude and longitude
             $location_address = getLocationName($request->latitude, $request->longitude);
             // Update the Client record in the database
-            $validatedData['type'] = 5;
-            $validatedData['doctor_id'] = $validatedData['doctor'];
+            $validatedData['type'] = 'Farm';
+            $validatedData['parent_id'] = $validatedData['doctor'];
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
             $validatedData['location_address'] = $location_address;
@@ -213,17 +208,17 @@ class FarmController extends Controller
             unset($validatedData['thana']);
             $farm->update($validatedData);
 
-            $user = User::where('role','Farm')->where('client_id',$farm->id)->first();
-            if (!$user){
-                $user = new User();
-            }
-            $user->role = 'Farm';
-            $user->client_id = $farm->id;
-            $user->name = $request->name;
-            $user->username  = $request->mobile_no;
-            $user->email = $request->email;
-            $user->mobile_no = $request->mobile_no;
-            $user->save();
+            // $user = User::where('role','Farm')->where('client_id',$farm->id)->first();
+            // if (!$user){
+            //     $user = new User();
+            // }
+            // $user->role = 'Farm';
+            // $user->client_id = $farm->id;
+            // $user->name = $request->name;
+            // $user->username  = $request->mobile_no;
+            // $user->email = $request->email;
+            // $user->mobile_no = $request->mobile_no;
+            // $user->save();
 
             // Commit the transaction
             DB::commit();
@@ -259,10 +254,10 @@ class FarmController extends Controller
             // Delete the Client record
             $farm->delete();
             // Return a JSON success response
-            return response()->json(['success'=>true,'message' => 'Client deleted successfully'], Response::HTTP_OK);
+            return response()->json(['success'=>true,'message' => 'Farm deleted successfully'], Response::HTTP_OK);
         } catch (\Exception $e) {
             // Handle any errors, such as record not found
-            return response()->json(['success'=>false,'message' => 'Client not found: '.$e->getMessage()], Response::HTTP_OK);
+            return response()->json(['success'=>false,'message' => 'Farm not found: '.$e->getMessage()], Response::HTTP_OK);
         }
     }
 }
