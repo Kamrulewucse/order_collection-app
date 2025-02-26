@@ -5,9 +5,7 @@
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    @if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin','Divisional Admin']))
-                        <a href="{{ route('task.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Task Create <i class="fa fa-plus"></i></a>
-                    @endif
+                    <a href="{{ route('task.create') }}" class="btn btn-primary bg-gradient-primary btn-sm">Task Create <i class="fa fa-plus"></i></a>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
