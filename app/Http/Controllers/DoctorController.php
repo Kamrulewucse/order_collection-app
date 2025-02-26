@@ -23,7 +23,7 @@ class DoctorController extends Controller
     }
     public function dataTable()
     {
-        $query = Client::where('type',3);//Doctor
+        $query = Client::where('type','Doctor');//Doctor
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Client $client) {
@@ -61,18 +61,14 @@ class DoctorController extends Controller
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                ->where('type',3)
             ],
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',3)
             ],
             'email' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',3)
             ],
             'district' =>['required'],
             'thana' =>['required'],
@@ -86,10 +82,9 @@ class DoctorController extends Controller
 
         try {
             // Create a new Client record in the database
-            $validatedData['type'] = 3;
+            $validatedData['type'] = 'Doctor';
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
-            $validatedData['designation'] = $validatedData['designation'];
 
             unset($validatedData['district']);
             unset($validatedData['thana']);
@@ -131,7 +126,7 @@ class DoctorController extends Controller
      */
     public function edit(Client $doctor)
     {
-        if ($doctor->type != 3) {
+        if ($doctor->type != 'Doctor') {
             abort(404);
         }
         $districts = District::where('status',1)->get();
@@ -149,27 +144,22 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Client $doctor)
     {
-        if ($doctor->type != 3) {
+        if ($doctor->type != 'Doctor') {
             abort(404);
         }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                    ->where('type',3)
-                    ->ignore($doctor)
             ],
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',3)
                     ->ignore($doctor)
             ],
             'email' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',3)
                     ->ignore($doctor)
             ],
             'district' =>['required'],
@@ -187,7 +177,6 @@ class DoctorController extends Controller
             $validatedData['type'] = 3;
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
-            $validatedData['designation'] = $validatedData['designation'];
             
             unset($validatedData['district']);
             unset($validatedData['thana']);

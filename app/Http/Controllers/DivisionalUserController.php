@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Division;
 use App\Models\DivisionalUser;
 use App\Models\User;
@@ -22,22 +23,22 @@ class DivisionalUserController extends Controller
     }
     public function dataTable()
     {
-        $query = DivisionalUser::query();
+        $query = Client::where('type','Divisional Admin');
         return DataTables::eloquent($query)
             ->addIndexColumn()
-            ->addColumn('action', function(DivisionalUser $divisionalUser) {
+            ->addColumn('action', function(Client $divisionalUser) {
                 $btn = '';
                 $btn .= '<a href="' . route('divisional-user.edit', ['divisional_user' => $divisionalUser->id]) . '" class="btn btn-primary bg-gradient-primary btn-sm btn-edit"><i class="fa fa-edit"></i></a>';
                 // $btn .= ' <a role="button" data-id="' . $user->id . '" class="btn btn-danger btn-sm btn-delete"><i class="fa fa-trash"></i></a>';
                 return $btn;
             })
-            ->addColumn('user_id',function(DivisionalUser $divisionalUser){
+            ->addColumn('user_id',function(Client $divisionalUser){
                 return $divisionalUser->user->name??'';
             })
-            ->addColumn('division',function(DivisionalUser $divisionalUser){
+            ->addColumn('division',function(Client $divisionalUser){
                 return $divisionalUser->division->name_eng??'';
             })
-            ->addColumn('status', function(DivisionalUser $divisionalUser) {
+            ->addColumn('status', function(Client $divisionalUser) {
               if ($divisionalUser->status == 1)
                   return '<span class="badge badge-success">Active</span>';
               else
@@ -64,11 +65,11 @@ class DivisionalUserController extends Controller
             'division' =>['required'],
             'email' =>[
                 'nullable','max:255',
-                Rule::unique('users')
+                Rule::unique('clients')
             ],
             'mobile_no' =>[
                 'nullable','max:255',
-                Rule::unique('users')
+                Rule::unique('clients')
             ],
             'status' => 'required|boolean', // Ensure 'status' is boolean
         ]);
@@ -78,8 +79,9 @@ class DivisionalUserController extends Controller
         try {
 
             // Create a new Divisional User record in the database
-            $divisionalUser = new DivisionalUser();
-            $divisionalUser->user_id = $request->user;
+            $divisionalUser = new Client();
+            $divisionalUser->type = 'Divisional Admin';
+            $divisionalUser->parent_id = $request->user;
             $divisionalUser->division_id = $request->division;
             $divisionalUser->name = $request->name;
             $divisionalUser->email = $request->email;
@@ -88,12 +90,12 @@ class DivisionalUserController extends Controller
             $divisionalUser->status = $request->status;
             $divisionalUser->save();
 
-            $user = User::where('role','Divisional Admin')->where('divisional_user_id',$divisionalUser->id)->first();
+            $user = User::where('role','Divisional Admin')->where('client_id',$divisionalUser->id)->first();
             if (!$user){
                 $user = new User();
             }
             $user->role = 'Divisional Admin';
-            $user->divisional_user_id = $divisionalUser->id;
+            $user->client_id = $divisionalUser->id;
             $user->name = $request->name;
             $user->username  = $request->mobile_no;
             $user->email = $request->email;
@@ -116,13 +118,13 @@ class DivisionalUserController extends Controller
         }
    }
 
-    public function edit(DivisionalUser $divisionalUser){
+    public function edit(Client $divisionalUser){
         $admins = User::where('role','Admin')->get();
         $divisions = Division::all();
         return view('divisional_user.edit',compact('divisionalUser','divisions','admins'));
     }
 
-    public function update(DivisionalUser $divisionalUser,Request $request)
+    public function update(Client $divisionalUser,Request $request)
     {
         // Validate the request data
         $validatedData = $request->validate([
@@ -132,12 +134,12 @@ class DivisionalUserController extends Controller
             'division' =>['required'],
             'email' =>[
                 'nullable','max:255',
-                Rule::unique('divisional_users')
+                Rule::unique('clients')
                     ->ignore($divisionalUser)
             ],
             'mobile_no' =>[
                 'nullable','max:255',
-                Rule::unique('divisional_users')
+                Rule::unique('clients')
                     ->ignore($divisionalUser)
             ],
             'status' => 'required|boolean', // Ensure 'status' is boolean
@@ -148,7 +150,7 @@ class DivisionalUserController extends Controller
         try {
 
             // Create a new Divisional User record in the database
-            $divisionalUser->user_id = $request->user;
+            $divisionalUser->parent_id = $request->user;
             $divisionalUser->division_id = $request->division;
             $divisionalUser->name = $request->name;
             $divisionalUser->email = $request->email;
@@ -157,12 +159,12 @@ class DivisionalUserController extends Controller
             $divisionalUser->status = $request->status;
             $divisionalUser->save();
 
-            $user = User::where('role','Divisional Admin')->where('divisional_user_id',$divisionalUser->id)->first();
+            $user = User::where('role','Divisional Admin')->where('client_id',$divisionalUser->id)->first();
             if (!$user){
                 $user = new User();
             }
             $user->role = 'Divisional Admin';
-            $user->divisional_user_id = $divisionalUser->id;
+            $user->client_id = $divisionalUser->id;
             $user->name = $request->name;
             $user->username  = $request->mobile_no;
             $user->email = $request->email;
@@ -183,7 +185,7 @@ class DivisionalUserController extends Controller
         }
    }
 
-    public function destroy(DivisionalUser $divisionalUser)
+    public function destroy(Client $divisionalUser)
     {
         try {
             // Delete the User record

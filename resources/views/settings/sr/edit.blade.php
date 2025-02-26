@@ -48,7 +48,7 @@
                                 <select class="form-control select2" name="divisional_user_id" id="divisional_admin">
                                     <option value="">Select Option</option>
                                     @foreach ($divisionalUsers as $divisionalUser)
-                                        <option value="{{ $divisionalUser->id }}" {{ $divisionalUser->id==$sr->divisional_admin_id?'selected':'' }} data-division_id="{{ $divisionalUser->division_id }}">{{ $divisionalUser->name }} - ({{ $divisionalUser->division->name_eng??'' }})</option>
+                                        <option value="{{ $divisionalUser->id }}" {{ $divisionalUser->id==$sr->parent_id?'selected':'' }} data-division_id="{{ $divisionalUser->division_id }}">{{ $divisionalUser->name }} - ({{ $divisionalUser->division->name_eng??'' }})</option>
                                     @endforeach
                                 </select>
                                 <input type="hidden" name="division" id="division" value="{{ $divisionalUser->division_id }}">
@@ -133,7 +133,7 @@
             $(document).ready(function () {
                 const oldThanaId = "{{ old('thana',$sr->thana_id) }}";
                 const oldDistrictId = "{{ old('district',$sr->district_id) }}";
-                const oldDivisionId = "{{ old('division',$sr->divisional_admin_id) }}";
+                const oldDivisionId = "{{ old('division',$sr->division_id) }}";
 
                 function loadDistricts(divisionId, selectedDistrictId = null) {
                     if (divisionId) {

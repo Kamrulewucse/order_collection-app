@@ -21,16 +21,18 @@ class Client extends Model
         return $this->hasMany(Transaction::class, 'company_id', 'id');
     }
 
-    public function sr()
+    public function parent()
     {
-        return $this->belongsTo(Client::class, 'sr_id', 'id');
-    }
-    public function doctor()
-    {
-        return $this->belongsTo(Client::class, 'doctor_id', 'id');
+        return $this->belongsTo(Client::class, 'parent_id', 'id');
     }
     public function divisionalAdmin(){
         return $this->belongsTo(DivisionalUser::class,'divisional_user_id');
+    }
+    public function user(){
+        return $this->belongsTo(User::class,'parent_id');
+    }
+    public function division(){
+        return $this->belongsTo(Division::class,'division_id');
     }
     public function district()
     {

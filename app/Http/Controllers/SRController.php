@@ -10,7 +10,9 @@ use App\Models\Network;
 use App\Models\PurchaseOrder;
 use App\Models\Client;
 use App\Models\District;
+use App\Models\SaleOrder;
 use App\Models\User;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -29,7 +31,7 @@ class SRController extends Controller
     }
     public function dataTable()
     {
-        $query = Client::where('type',2);//SR
+        $query = Client::where('type','SR');//SR
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('action', function(Client $client) {
@@ -42,7 +44,7 @@ class SRController extends Controller
                 return $client->district->name_eng ?? '';
             })
             ->addColumn('divisional_admin', function(Client $client) {
-                return $client->divisionalAdmin->name ?? '';
+                return $client->parent->name ?? '';
             })
             ->addColumn('thana_name', function(Client $client) {
                 return $client->thana->name_eng ?? '';
@@ -57,7 +59,7 @@ class SRController extends Controller
      */
     public function create()
     {
-        $divisionalUsers = DivisionalUser::where('status',1)->get();
+        $divisionalUsers = Client::where('type','Divisional Admin')->where('status',1)->get();
         $districts = District::where('status',1)->get();
         return view('settings.sr.create',compact('districts','divisionalUsers'));
     }
@@ -67,24 +69,22 @@ class SRController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                ->where('type',2)
             ],
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',2)
             ],
             'email' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',2)
             ],
             'divisional_user_id' =>['required'],
+            'division' =>['required'],
             'district' =>['required'],
             'thana' =>['required'],
             'address' => 'nullable|string|max:255', // Make 'address' nullable
@@ -96,13 +96,17 @@ class SRController extends Controller
 
         try {
             // Create a new Client record in the database
-            $validatedData['type'] = 2;
+            $validatedData['type'] = 'SR';
+            $validatedData['parent_id'] = $validatedData['divisional_user_id'];
+            $validatedData['division_id'] = $validatedData['division'];
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
 
+            unset($validatedData['divisional_user_id']);
+            unset($validatedData['division']);
             unset($validatedData['district']);
             unset($validatedData['thana']);
-
+            // dd($validatedData);
             $sr = Client::create($validatedData);
             // Create/Update User
             $user = User::where('role','SR')->where('client_id',$sr->id)->first();
@@ -120,17 +124,11 @@ class SRController extends Controller
 
             // Commit the transaction
             DB::commit();
-
-            // Redirect to the index page with a success message
             return redirect()->route('sr.index')->with('success', 'SR created successfully');
-        } catch (\Exception $e) {
-            // Roll back the transaction in case of an error
+        } catch (Exception $exception) {
+            dd($exception->getMessage());
             DB::rollback();
-
-            // Handle the error and redirect with an error message
-            return redirect()->route('sr.create')
-                ->withInput()
-                ->with('error', 'An error occurred while creating the SR: '.$e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while creating the SR: ' . $exception->getMessage())->withInput();
         }
     }
 
@@ -139,10 +137,10 @@ class SRController extends Controller
      */
     public function edit(Client $sr)
     {
-        if ($sr->type != 2) {
+        if ($sr->type != 'SR') {
             abort(404);
         }
-        $divisionalUsers = DivisionalUser::where('status',1)->get();
+        $divisionalUsers = Client::where('type','Divisional Admin')->where('status',1)->get();
         $districts = District::where('status',1)->get();
         try {
             // If the Client exists, display the edit view
@@ -158,31 +156,27 @@ class SRController extends Controller
      */
     public function update(Request $request, Client $sr)
     {
-        if ($sr->type != 2) {
+        if ($sr->type != 'SR') {
             abort(404);
         }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                    ->where('type',2)
-                    ->ignore($sr)
             ],
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',2)
                     ->ignore($sr)
             ],
             'email' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',2)
                     ->ignore($sr)
             ],
             'address' => 'nullable|string|max:255', // Make 'address' nullable
-            'divisional_admin_id' =>['required'],
+            'divisional_user_id' =>['required'],
+            'division' =>['required'],
             'district' =>['required'],
             'thana' =>['required'],
             'status' => 'required|boolean', // Ensure 'status' is boolean
@@ -193,10 +187,14 @@ class SRController extends Controller
 
         try {
             // Update the Client record in the database
-            $validatedData['type'] = 2;
+            $validatedData['type'] = 'SR';
+            $validatedData['parent_id'] = $validatedData['divisional_user_id'];
             $validatedData['district_id'] = $validatedData['district'];
+            $validatedData['division_id'] = $validatedData['division'];
             $validatedData['thana_id'] = $validatedData['thana'];
 
+            unset($validatedData['divisional_user_id']);
+            unset($validatedData['division']);
             unset($validatedData['district']);
             unset($validatedData['thana']);
 
@@ -223,7 +221,7 @@ class SRController extends Controller
         } catch (\Exception $e) {
             // Roll back the transaction in case of an error
             DB::rollback();
-
+            dd($e->getMessage());
             // Handle the error and redirect with an error message
             return redirect()->route('sr.edit',['sr'=>$sr->id])
                 ->withInput()
