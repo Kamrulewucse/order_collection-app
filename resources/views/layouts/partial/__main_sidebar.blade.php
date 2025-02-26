@@ -44,51 +44,12 @@
                     <li class="nav-item">
                         <a href="{{ route('divisional-user.index') }}"
                             class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
-                            <i class="nav-icon fa-solid fa-users-gear"></i>
+                            <i class="nav-icon fa-solid fa-user"></i>
                             <p>Divisional Head</p>
                         </a>
                     </li>
                 @endif
-                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin']))
-                    <?php
-                    $subMenu = ['tracking.live_location','tracking.location_history'];
-                    ?>
-                    <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
-                        <a href="#"
-                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-bullseye"></i>
-                            <p>
-                                Monitoring
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <?php
-                            $subSubMenu = ['tracking.live_location'];
-                            ?>
-                            <li class="nav-item">
-                                <a href="{{ route('tracking.live_location') }}"
-                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
-                                    <i
-                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                    <p>Live Location</p>
-                                </a>
-                            </li>
-                            <?php
-                            $subSubMenu = ['tracking.location_history'];
-                            ?>
-                            <li class="nav-item">
-                                <a href="{{ route('tracking.location_history') }}"
-                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
-                                    <i
-                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
-                                    <p>Location History</p>
-                                </a>
-                            </li>
-                            
-                        </ul>
-                    </li>
-                @endif
+                
                 <?php
                 $subMenu = ['unit.index', 'unit.create', 'unit.edit', 'product.index', 'product.create', 'product.edit', 'category.index', 'category.create', 'category.edit', 'sub-category.index', 'sub-category.create', 'sub-category.edit'];
                 ?>
@@ -148,6 +109,102 @@
                         </li>
                     </ul>
                 </li>
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin']))
+                    <?php
+                    $subMenu = ['tracking.live_location','tracking.location_history'];
+                    ?>
+                    <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
+                        <a href="#"
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-bullseye"></i>
+                            <p>
+                                Monitoring
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php
+                            $subSubMenu = ['tracking.live_location'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('tracking.live_location') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Live Location</p>
+                                </a>
+                            </li>
+                            <?php
+                            $subSubMenu = ['tracking.location_history'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('tracking.location_history') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Location History</p>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                @endif
+
+                @if (in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin']))
+                    <?php
+                    $subMenu = [
+                        'hatchery-manager.index','hatchery-manager.create','hatchery-manager.edit',
+                        'hatchery.index','hatchery.create','hatchery.edit','chick-production.index',
+                        'chick-production.create','chick-production.details'
+                    ];
+                    ?>
+                    <li class="nav-item {{ in_array(Route::currentRouteName(), $subMenu) ? 'menu-open' : '' }}">
+                        <a href="#"
+                            class="nav-link {{ in_array(Route::currentRouteName(), $subMenu) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-egg"></i>
+                            <p>
+                                Hatchery Mangement
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php
+                            $subSubMenu = ['hatchery.index','hatchery.create','hatchery.edit'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('hatchery.index') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Hatchery</p>
+                                </a>
+                            </li>
+                            <?php
+                            $subSubMenu = ['hatchery-manager.index','hatchery-manager.create','hatchery-manager.edit'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('hatchery-manager.index') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Hatchery Manager</p>
+                                </a>
+                            </li>
+                            <?php
+                            $subSubMenu = ['chick-production.index','chick-production.create','chick-production.details'];
+                            ?>
+                            <li class="nav-item">
+                                <a href="{{ route('chick-production.index') }}"
+                                    class="nav-link {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'active' : '' }}">
+                                    <i
+                                        class="far  {{ in_array(Route::currentRouteName(), $subSubMenu) ? 'fa-check-circle' : 'fa-circle' }} nav-icon"></i>
+                                    <p>Chick Production</p>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                @endif
                 <?php
                 $subMenu = ['sr.index', 'sr.create', 'sr.edit', 'doctor.index', 'doctor.create', 'doctor.edit'];
                 ?>

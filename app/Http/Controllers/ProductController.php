@@ -56,6 +56,13 @@ class ProductController extends Controller
                 return $btn;
 
             })
+            ->editColumn('type', function(Product $product) {
+               if($product->type == 1){
+                  return '<span class="badge badge-success">Raw Item</span>';
+               }else{
+                  return '<span class="badge badge-info">Finished Goods</span>';
+               }
+            })
             ->editColumn('purchase_price', function(Product $product) {
                return number_format($product->purchase_price,2);
             })
@@ -72,7 +79,7 @@ class ProductController extends Controller
                return $product->subCategory->name ?? '';
             })
 
-            ->rawColumns(['action'])
+            ->rawColumns(['action','type'])
             ->toJson();
     }
 
@@ -99,6 +106,7 @@ class ProductController extends Controller
                 'required','max:255',
                 Rule::unique('products')
             ],
+            'type' => 'required',
             'purchase_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
             'unit' => 'required',
@@ -163,6 +171,7 @@ class ProductController extends Controller
                 Rule::unique('products')
                     ->ignore($product)
             ],
+            'type' => 'required',
             'purchase_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
             'unit' => 'required',

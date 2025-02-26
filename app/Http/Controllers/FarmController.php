@@ -25,7 +25,7 @@ class FarmController extends Controller
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
             $query = Client::with('district','thana')->where('type','Farm'); //Farm
         }else{
-            $query = Client::with('district','thana')->where('type','Farm')->where('doctor_id',auth()->user()->client_id); //type 5 for Farm
+            $query = Client::with('district','thana')->where('type','Farm')->where('parent_id',auth()->user()->client_id); //type 5 for Farm
         }
         return DataTables::eloquent($query)
             ->addIndexColumn()

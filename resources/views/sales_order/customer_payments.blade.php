@@ -294,7 +294,7 @@
                     },
                     {
                         data: 'sr_name',
-                        name: 'sr.name'
+                        name: 'parent.name'
                     },
                     {
                         data: 'address',

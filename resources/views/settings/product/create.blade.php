@@ -23,6 +23,19 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="form-group row {{ $errors->has('type') ? 'has-error' :'' }}">
+                            <label for="type" class="col-sm-2 col-form-label">Type <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select name="type" id="type" class="form-control select2">
+                                    <option value="">Select Type</option>
+                                    <option value="1" {{ old('type')=='1'?'selected':'' }}>Raw Item</option>
+                                    <option value="2" {{ old('type')=='2'?'selected':'' }}>Finished Goods</option>
+                                </select>
+                                @error('type')
+                                <span class="help-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="form-group row {{ $errors->has('category') ? 'has-error' :'' }}">
                             <label for="category" class="col-sm-2 col-form-label">Category <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
@@ -65,7 +78,7 @@
                         <div class="form-group row {{ $errors->has('purchase_price') ? 'has-error' :'' }}">
                             <label for="purchase_price" class="col-sm-2 col-form-label">Purchase Price <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="number" step="any" value="{{ old('purchase_price') }}" name="purchase_price" class="form-control" id="purchase_price" placeholder="Enter Purchase Price">
+                                <input type="number" step="any" value="{{ old('purchase_price',0) }}" name="purchase_price" class="form-control" id="purchase_price" placeholder="Enter Purchase Price">
                                 @error('purchase_price')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
@@ -74,7 +87,7 @@
                         <div class="form-group row {{ $errors->has('selling_price') ? 'has-error' :'' }}">
                             <label for="selling_price" class="col-sm-2 col-form-label">Selling Price <span class="text-danger">*</span></label>
                             <div class="col-sm-10">
-                                <input type="number" step="any" value="{{ old('selling_price') }}" name="selling_price" class="form-control" id="selling_price" placeholder="Enter Selling Price">
+                                <input type="number" step="any" value="{{ old('selling_price',0) }}" name="selling_price" class="form-control" id="selling_price" placeholder="Enter Selling Price">
                                 @error('selling_price')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror

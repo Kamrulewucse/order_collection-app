@@ -12,7 +12,7 @@
                     <div class="row">
                         <div class="col-12 col-md-3">
                             <div class="form-group">
-                                <label for="product" class="col-form-label">Client <span
+                                <label for="product" class="col-form-label">Product <span
                                         class="text-danger">*</span></label>
                                 <select name="product" id="product" class="form-control select2">
                                     <option value="">All Product</option>
@@ -63,6 +63,7 @@
                                 <tr>
                                     <th>S/L</th>
                                     <th>Name</th>
+                                    <th>Type</th>
                                     <th>Code</th>
                                     <th>Category</th>
                                     <th>Sub Category</th>
@@ -109,6 +110,10 @@
                     {
                         data: 'name',
                         name: 'name'
+                    },
+                    {
+                        data: 'type',
+                        name: 'type'
                     },
                     {
                         data: 'code',

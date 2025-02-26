@@ -12,9 +12,12 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChickProductionController;
 use App\Http\Controllers\DivisionalUserController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmVisitController;
+use App\Http\Controllers\HatcheryController;
+use App\Http\Controllers\HatcheryManagerController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\LocationController;
@@ -100,6 +103,20 @@ Route::middleware('checkDatabaseConnection')->group(function (){
         Route::resource('task', TaskController::class);
         Route::get('task-datatable', [TaskController::class, 'dataTable'])->name('task.datatable');
         Route::get('task-details/{task}', [TaskController::class, 'details'])->name('task.details');
+
+        //Hatchery Management
+        //Hatchery 
+        Route::resource('hatchery', HatcheryController::class);
+        Route::get('hatchery-datatable', [HatcheryController::class, 'dataTable'])->name('hatchery.datatable');
+        
+        //Hatchery Manager
+        Route::resource('hatchery-manager', HatcheryManagerController::class);
+        Route::get('hatchery-manager-datatable', [HatcheryManagerController::class, 'dataTable'])->name('hatchery-manager.datatable');
+        
+        //Chick Production
+        Route::resource('chick-production', ChickProductionController::class);
+        Route::get('chick-production-details/{chickProduction}', [ChickProductionController::class, 'chickProductionDetails'])->name('chick-production.details');
+        Route::get('chick-production-datatable', [ChickProductionController::class, 'dataTable'])->name('chick-production.datatable');
 
         //SR
         Route::resource('sr', SRController::class);

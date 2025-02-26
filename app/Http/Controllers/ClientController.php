@@ -23,9 +23,9 @@ class ClientController extends Controller
     public function dataTable()
     {
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
-            $query = Client::with('sr','district','thana')->where('type',4);//Client
+            $query = Client::with('parent','district','thana')->where('type','Client');//Client
         }else{
-            $query = Client::with('sr','district','thana')->where('type',4)->where('sr_id',auth()->user()->client_id);//Client
+            $query = Client::with('parent','district','thana')->where('type','Client')->where('sr_id',auth()->user()->client_id);//Client
         }
         return DataTables::eloquent($query)
             ->addIndexColumn()
@@ -37,7 +37,7 @@ class ClientController extends Controller
                 return $btn;
             })
             ->addColumn('sr_name', function(Client $client) {
-                return $client->sr->name ?? '';
+                return $client->parent->name ?? '';
             })
             ->addColumn('district_name', function(Client $client) {
                 return $client->district->name_eng ?? '';
@@ -56,10 +56,10 @@ class ClientController extends Controller
     public function create()
     {
         $srs = [];
-        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
-            $srs = Client::where('type',2)->where('status',1)->get(); //type 2  for SR
+        if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+            $srs = Client::where('type','SR')->where('status',1)->get(); //type 2  for SR
         }else{
-            $srs = Client::where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
+            $srs = Client::where('type','SR')->where('id',auth()->user()->client_id)->first(); //type 2 for SR
         }
         // dd();
         $districts = District::where('status',1)->get();
@@ -75,8 +75,6 @@ class ClientController extends Controller
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                ->where('type',4)
             ],
             'shop_name' =>[
                 'required','max:255',
@@ -84,7 +82,7 @@ class ClientController extends Controller
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',4)
+                    ->where('type','Client')
             ],
             'sr' =>['required'],
             'client_type' =>['required'],
@@ -104,8 +102,8 @@ class ClientController extends Controller
         try {
             $location_address = getLocationName($request->latitude, $request->longitude);
             // Create a new Client record in the database
-            $validatedData['type'] = 4;
-            $validatedData['sr_id'] = $validatedData['sr'];
+            $validatedData['type'] = 'Client';
+            $validatedData['parent_id'] = $validatedData['sr'];
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
             $validatedData['location_address'] = $location_address;
@@ -135,16 +133,16 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        if ($client->type != 4) {
+        if ($client->type != 'Client') {
             abort(404);
         }
         try {
             // If the Client exists, display the edit view
             $srs = [];
-            if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
-                $srs = Client::where('type',2)->where('status',1)->get(); // 2 for SR
+            if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
+                $srs = Client::where('type','SR')->where('status',1)->get(); // 2 for SR
             }else{
-                $srs = Client::where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
+                $srs = Client::where('type','SR')->where('id',auth()->user()->client_id)->first(); //type 2 for SR
             }
             
             $districts = District::where('status',1)->get();
@@ -160,16 +158,13 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
-        if ($client->type != 4) {
+        if ($client->type != 'Client') {
             abort(404);
         }
         // Validate the request data
         $validatedData = $request->validate([
             'name' =>[
                 'required','max:255',
-                Rule::unique('clients')
-                    ->where('type',4)
-                    ->ignore($client)
             ],
             'shop_name' =>[
                 'required','max:255',
@@ -177,7 +172,7 @@ class ClientController extends Controller
             'mobile_no' =>[
                 'required','max:255',
                 Rule::unique('clients')
-                    ->where('type',4)
+                    ->where('type','Client')
                     ->ignore($client)
             ],
             'sr' =>['required'],
@@ -199,8 +194,8 @@ class ClientController extends Controller
             //Get addresss from latitude and longitude
             $location_address = getLocationName($request->latitude, $request->longitude);
             // Update the Client record in the database
-            $validatedData['type'] = 4;
-            $validatedData['sr_id'] = $validatedData['sr'];
+            $validatedData['type'] = 'Client';
+            $validatedData['parent_id'] = $validatedData['sr'];
             $validatedData['district_id'] = $validatedData['district'];
             $validatedData['thana_id'] = $validatedData['thana'];
             $validatedData['location_address'] = $location_address;

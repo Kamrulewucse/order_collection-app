@@ -464,11 +464,11 @@ class SalesOrderController extends Controller
     public function customerPayments(Request $request)
     {
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
-            $clients = Client::where('type', 4)->get(); //type=4 for client
-            $srs = Client::where('type', 2)->get(); //type=2 for SR
+            $clients = Client::where('type', 'Client')->get(); //type=4 for client
+            $srs = Client::where('type', 'SR')->get(); //type=2 for SR
         }else{
-            $clients = Client::where('type', 4)->where('sr_id',auth()->user()->client_id)->get(); //type=4 for client
-            $srs = Client::where('type', 2)->where('id',auth()->user()->client_id)->get();
+            $clients = Client::where('type', 'Client')->where('sr_id',auth()->user()->client_id)->get(); //type=4 for client
+            $srs = Client::where('type', 'SR')->where('id',auth()->user()->client_id)->get();
         }
         return view('sales_order.customer_payments', compact(
             'clients','srs'
@@ -477,16 +477,16 @@ class SalesOrderController extends Controller
     public function customerPaymentsDataTable()
     {
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
-            $query = Client::where('type', 4) // type=4 for client
+            $query = Client::where('type', 'Client') // type=4 for client
             ->whereHas('saleOrders')
             ->with('saleOrders')
-            ->with('sr');
+            ->with('parent');
         }else{
-            $query = Client::where('type', 4) // type=4 for client
+            $query = Client::where('type', 'Client') // type=4 for client
             ->where('sr_id',auth()->user()->client_id)
             ->whereHas('saleOrders')
             ->with('saleOrders')
-            ->with('sr');
+            ->with('parent');
         }
 
 
@@ -504,7 +504,7 @@ class SalesOrderController extends Controller
         }
 
         if (request()->has('sr') && request('sr') != '') {
-            $query->where('sr_id', request('sr'));
+            $query->where('parent_id', request('sr'));
         }
 
         return DataTables::eloquent($query)
@@ -532,7 +532,7 @@ class SalesOrderController extends Controller
             })
 
             ->addColumn('sr_name', function (Client $client) {
-                return $client->sr->name ?? 0;
+                return $client->parent->name ?? 0;
             })
             ->addColumn('total', function (Client $client) {
                 return $client->total ?? 0;

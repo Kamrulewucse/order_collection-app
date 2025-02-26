@@ -29,7 +29,7 @@ class RequisitionOrderController extends Controller
     {
         $pageTitle = 'Requisition Orders';
 
-        $srs = Client::where('type',2)->get(); //here type=2 for SR
+        $srs = Client::where('type','SR')->get(); //here type=2 for SR
         return view('requisition_order.index', compact(
             'pageTitle',
             'srs'
@@ -40,7 +40,7 @@ class RequisitionOrderController extends Controller
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin'])){
             $query = RequisitionOrder::with('sr','client');
         }elseif(in_array(auth()->user()->role, ['Divisional Admin'])){
-            $query = RequisitionOrder::with('sr','client')->where('divisional_user_id',auth()->user()->divisional_user_id);
+            $query = RequisitionOrder::with('sr','client')->where('divisional_user_id',auth()->user()->client_id);
         }else{
             $query = RequisitionOrder::with('sr','client')->where('sr_id',auth()->user()->client_id);
         }
@@ -60,7 +60,7 @@ class RequisitionOrderController extends Controller
                     $icon = '<i class="fa fa-plus"></i>';
                 }
                 $btn .= ' <a  href="' . route('requisition-order.details', ['requisitionOrder' => $requisitionOrder->id]) . '" class="dropdown-item">' . $icon . ' Invoice</a>';
-                if ($requisitionOrder->status == 1 && $requisitionOrder->d_status != 1 && $requisitionOrder->divisional_user_id == auth()->user()->divisional_user_id) {
+                if ($requisitionOrder->status == 1 && $requisitionOrder->d_status != 1 && $requisitionOrder->divisional_user_id == auth()->user()->client_id) {
                     $btn .= ' <a  data-id="' . $requisitionOrder->id . '" role="button" class="dropdown-item approved"><i class="fa fa-info-circle"></i> Approved</a>';
                 }
                 if ($requisitionOrder->status == 1 && $requisitionOrder->d_status == 1 && $requisitionOrder->h_status != 1 && auth()->user()->role == 'Admin') {
@@ -119,11 +119,11 @@ class RequisitionOrderController extends Controller
     {
         $srs = [];
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
-            $srs = Client::where('status', 1)->where('type', 2)->get(); //type=2 is SR
-            $clients = Client::where('status', 1)->where('type', 4)->get(); //type=4 is Client
+            $srs = Client::where('status', 1)->where('type', 'SR')->get(); //type=2 is SR
+            $clients = Client::where('status', 1)->where('type', 'Client')->get(); //type=4 is Client
         }else{
-            $srs = Client::where('status', 1)->where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
-            $clients = Client::where('status', 1)->where('type', 4)->where('sr_id',auth()->user()->client_id)->get(); //type=4 is Client
+            $srs = Client::where('status', 1)->where('type','SR')->where('id',auth()->user()->client_id)->first(); //type 2 for SR
+            $clients = Client::where('status', 1)->where('type', 'Client')->where('sr_id',auth()->user()->client_id)->get(); //type=4 is Client
         }
 
         $products = [];
@@ -169,7 +169,7 @@ class RequisitionOrderController extends Controller
             $sr = Client::find($request->sr);
             $requisitionOrder = new RequisitionOrder();
             $requisitionOrder->sr_id = $request->sr;
-            $requisitionOrder->divisional_user_id = $sr->divisional_user_id;
+            $requisitionOrder->divisional_user_id = $sr->parent_id;//divisional admin
             $requisitionOrder->client_id = $request->client;
             $requisitionOrder->total = 0;
             $requisitionOrder->advance = 0;
@@ -261,7 +261,7 @@ class RequisitionOrderController extends Controller
         $requisitionOrder->load('requisitionOrderItems');
         // dd('hi');
         $products = Product::whereIn('id', $requisitionOrder->requisitionOrderItems->pluck('product_id'))->get();
-        $clients = Client::where('type',4)->get();
+        $clients = Client::where('type','Client')->get();
         $pageTitle = 'Requisition Sales Invoice';
 
         return view('requisition_order.requisition_details', compact(
@@ -295,11 +295,11 @@ class RequisitionOrderController extends Controller
     }
     public function requisitionMakeOrder(RequisitionOrder $requisitionOrder){
         if(in_array(auth()->user()->role, ['Admin', 'SuperAdmin', 'Divisional Admin'])){
-            $srs = Client::where('status', 1)->where('type', 2)->get(); //type=2 is SR
-            $clients = Client::where('status', 1)->where('type', 4)->get(); //type=4 is Client
+            $srs = Client::where('status', 1)->where('type', 'SR')->get(); //type=2 is SR
+            $clients = Client::where('status', 1)->where('type', 'Client')->get(); //type=4 is Client
         }else{
-            $srs = Client::where('status', 1)->where('type',2)->where('id',auth()->user()->client_id)->first(); //type 2 for SR
-            $clients = Client::where('status', 1)->where('type', 4)->where('sr_id',auth()->user()->client_id)->get(); //type=4 is Client
+            $srs = Client::where('status', 1)->where('type','SR')->where('id',auth()->user()->client_id)->first(); //type 2 for SR
+            $clients = Client::where('status', 1)->where('type', 'Client')->where('sr_id',auth()->user()->client_id)->get(); //type=4 is Client
         }
         $products = Product::where('status', 1)->get();
 
